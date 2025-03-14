@@ -22,10 +22,10 @@ public class DDInitMixin {
         ReplacedDDBlockPartialModel.init();
     }
 
-    @WrapOperation(method = "<init>", at = @At(value = "INVOKE", target = "Luwu/lopyluna/create_dd/block/DDBlockEntityTypes;register()V"), remap = false)
-    private void initMYBlockEntityTypes(Operation<Void> original){
-        StupidDDBlockEntityTypes.register();
-    }
+//    @WrapOperation(method = "<init>", at = @At(value = "INVOKE", target = "Luwu/lopyluna/create_dd/block/DDBlockEntityTypes;register()V"), remap = false)
+//    private void initMYBlockEntityTypes(Operation<Void> original){
+//        StupidDDBlockEntityTypes.register();
+//    }
 
 
 
