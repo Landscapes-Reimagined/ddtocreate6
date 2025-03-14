@@ -7,6 +7,10 @@
   "mixins": [
     "AddInstanceToCreateBlockEntityBuilder",
     "BronzeRendererSawFixer",
+    "BlockFixers.BronzeSawBlockMixin",
+    "BlockFixers.BronzeSawPlacementMixin",
+    "BlockFixers.FanSailBlockMixin",
+    "BlockFixers.FanSailBlockPlacementMixin",
     "initfixers.DDBlocksFixer",
     "initfixers.DDBlockTagsMixin",
     "initfixers.DDFluidTagsMixin",
@@ -14,6 +18,7 @@
   ],
   "client": [
   ],
+  "plugin": "com.landscapesreimagined.ddtocreate6.mixin.MixinConfigPlugin",
   "mixinextras": {
     "minVersion": "0.5.0-beta.5"
   },
