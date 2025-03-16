@@ -2,6 +2,7 @@ package com.landscapesreimagined.ddtocreate6.mixin;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
+import org.objectweb.asm.util.Textifier;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
@@ -9,9 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MixinConfigPlugin implements IMixinConfigPlugin {
     @Override
@@ -42,6 +41,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
     public static String wrongPlacementHelper = "com/simibubi/create/foundation/placement/IPlacementHelper";
     public static String placementHelper = "net/createmod/catnip/placement/IPlacementHelper";
 
+    public static String[] CStressValidMethods = {"setImpact", "setCapacity", "setNoImpact"};
+
     @Override
     public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
         if(targetClassName.equals("uwu.lopyluna.create_dd.block.DDBlocks")){
@@ -55,19 +56,35 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 //            } catch (IOException e) {
 //                throw new RuntimeException(e);
 //            }
+
+
+
+            StringBuilder methodInsn = new StringBuilder();
             for(MethodNode method : targetClass.methods){
-//                if(!method.name.equals("<clinit>")){
-//                    continue;
+//                boolean inRightMethod = false;
+//                if(){
+//                    inRightMethod = true;
 //                }
 //                System.out.println(method.name);
+
+
+
+
+
                 boolean deletingLine = false;
                 ArrayList<AbstractInsnNode> instructionsToRemove = new ArrayList<>();
                 for(AbstractInsnNode instruction : method.instructions){
+                    
+//                    printInstruction(instruction);
+                    if(method.name.equals("<clinit>")){
+                        methodInsn.append(insnToString(instruction, method)).append('\n');
+                    }
 
                     if(deletingLine){
 
 
                         if(instruction.getOpcode() == 192){
+                            deletingLine = false;
                             continue;
                         }
 
@@ -111,13 +128,75 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 //                            System.out.println();
 //                        }
 
+                        printInstruction(instruction, method);
+
                         method.instructions.remove(instruction);
 
                     }
                     instructionsToRemove.clear();
 //                }
             }
+            //end method iters
 
+//            writeDumpFile(targetClassName, methodInsn.toString());
+
+
+
+
+            for(MethodNode method : targetClass.methods){
+                boolean rightMethod = method.name.equals("<clinit>");
+                ArrayDeque<AbstractInsnNode> toRemove = new ArrayDeque<>();
+                int delCounter = 0;
+
+                for(AbstractInsnNode insn : method.instructions){
+                    if(insn instanceof MethodInsnNode methodNode && methodNode.owner.contains("BlockStressDefaults")){
+//                        System.out.println("Method: ");
+//                        System.out.println(" Method: " + methodNode.name + ", Desc: " + methodNode.desc + ", Owner: " + methodNode.owner);
+                        if(Arrays.stream(CStressValidMethods).anyMatch((s)-> s.equals(methodNode.name))) {
+                            methodNode.owner = "com/landscapesreimagined/ddtocreate6/util/RegistrateUtil";
+                        }
+                    }
+
+
+                    if(rightMethod){
+
+                        if(insn instanceof TypeInsnNode typeNode){
+
+                            if(insn.getOpcode() == 187 && typeNode.desc.contains("BronzeSawMovementBehaviour")){
+                                delCounter = 3;
+
+                            }
+
+                        }
+
+                        if(delCounter > 0){
+                            toRemove.push(insn);
+
+//                            printInstruction(insn, method);
+                            delCounter -= 1;
+                        }
+
+
+                    }
+
+
+                }
+                //end insn iterations
+
+                while(!toRemove.isEmpty()){
+                    AbstractInsnNode insn = toRemove.removeLast();
+//                    toRemove.remove
+
+                    method.instructions.remove(insn);
+
+                    printInstruction(insn, method);
+                }
+
+
+
+
+            }
+            //end method iterations
 
 
 
@@ -130,12 +209,14 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 //            File bytecodeDumpa = new File("C:\\Users\\gamma\\OneDrive\\Documents\\sources\\class-after-dump-" + targetClassName.substring(targetClassName.lastIndexOf('.') + 1) + ".class");
 //
 //            try {
-//                java.nio.file.Files.write(bytecodeDumpa.toPath(), writer.toByteArray());
+//                java.nio.file.Files.write(bytecodeDumpa.toPath(), writera.toByteArray());
 //            } catch (IOException e) {
 //                throw new RuntimeException(e);
 //            }
         }
-        System.out.println(targetClassName);
+        //end DDBlocks check
+
+//        System.out.println(targetClassName);
 
         if(targetClassName.contains("BronzeSawBlock")){
 //            System.out.println("Targeting bronze saw block: " + targetClassName);
@@ -201,29 +282,52 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                 }
             }
 
-//            File dumpFile = new File("C:\\Users\\gamma\\OneDrive\\Documents\\sources\\instruction dumps\\dump-" + targetClassName.substring(targetClassName.lastIndexOf(".") + 1) + ".txt");
-//
-//            try {
-//                Files.writeString(dumpFile.toPath(), classInstructions);
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
+
+//            writeDumpFile(targetClassName);
 
 
         }
+        //end bronze saw block checks
 
 
 
 
 
-
+//        System.exit(-1);
     }
 
-    public static String insnToString(AbstractInsnNode instruction, MethodNode method){
-        StringBuilder builder = new StringBuilder();
-        builder.append("instruction: ").append(instruction.getOpcode()).append(" type: ").append(instruction.getType());
+    private static void writeDumpFile(String targetClassName, String classInstructions) {
+        File dumpFile = new File("C:\\Users\\gamma\\OneDrive\\Documents\\sources\\instruction dumps\\dump-" + targetClassName.substring(targetClassName.lastIndexOf(".") + 1) + ".txt");
 
-        if(instruction.getType() == AbstractInsnNode.VAR_INSN) {
+        try {
+            Files.writeString(dumpFile.toPath(), classInstructions);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String insnToString(AbstractInsnNode instruction, MethodNode method) {
+        StringBuilder builder = new StringBuilder();
+        //print common parameters
+        builder.append("instruction: ").append(instruction.getOpcode());
+
+        if(instruction.getOpcode() != -1){
+            builder.append(" hex: ").append(Integer.toHexString(instruction.getOpcode()));
+        }
+
+        builder.append(" type: ").append(instruction.getType());
+
+        //print type insn
+        if(instruction.getType() == AbstractInsnNode.TYPE_INSN) {
+
+            if(instruction.getOpcode() == 187){
+                builder.append(" New");
+            }
+
+            builder.append(" Type: ").append(((TypeInsnNode) instruction).desc);
+
+        //print variable insn
+        }else if(instruction.getType() == AbstractInsnNode.VAR_INSN) {
 
             VarInsnNode varInsn = (VarInsnNode) instruction;
 
@@ -233,10 +337,11 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
             }
 
 
-
+        //print label insn
         }else if(instruction.getType() == 8){
             LabelNode label = (LabelNode) instruction;
             builder.append(" Label: ").append(label.getLabel());
+        //print constant insn
         }else if(instruction.getType() == 9){
 
             assert instruction instanceof LdcInsnNode;
@@ -244,18 +349,21 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
             builder.append(" LDC: ").append(ldcInsnNode.cst);
 
+        //print line number
         } else if (instruction.getType() == 15) {
 
             if(instruction instanceof LineNumberNode lnn){
                 builder.append(" Line: ").append(lnn.line);
             }
 
+        //print method insn
         } else if(instruction.getType() == AbstractInsnNode.METHOD_INSN){
 
             MethodInsnNode methodNode = (MethodInsnNode) instruction;
 
             builder.append(" Method: ").append(methodNode.name).append(", Desc: ").append(methodNode.desc).append(", Owner: ").append(methodNode.owner);
 
+        //print invoke dynamic insn
         }else if (instruction instanceof InvokeDynamicInsnNode idin) {
 
             builder.append(" Invoke Dynamic: ").append(idin.name).append(", Desc: ").append(idin.desc);
@@ -267,7 +375,13 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
         return builder.toString();
     }
 
-    public static void printInstruction(AbstractInsnNode instruction){
+    public static void printInstruction(AbstractInsnNode instruction, MethodNode method){
+        String toPrint = insnToString(instruction, method);
+        System.out.println(toPrint);
+    }
+
+
+        public static void printInstruction(AbstractInsnNode instruction){
 
         System.out.print("instruction: " + instruction.getOpcode() + " type: " + instruction.getType());
 
