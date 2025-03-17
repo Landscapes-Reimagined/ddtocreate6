@@ -1,6 +1,9 @@
 package com.landscapesreimagined.ddtocreate6.mixin;
 
+import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionFixers;
+import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionToString;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.util.Textifier;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -16,6 +19,14 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
     @Override
     public void onLoad(String mixinPackage) {
         System.out.println("I WAS LOADED!!!");
+
+        try {
+            //load classes for use in preinit stuff
+            this.getClass().getClassLoader().loadClass("com.landscapesreimagined.ddtocreate6.preinitutils.InstructionToString");
+            this.getClass().getClassLoader().loadClass("com.landscapesreimagined.ddtocreate6.preinitutils.InstructionFixers");
+        } catch (ClassNotFoundException e) {
+            System.out.println("aw man :(");
+        }
     }
 
     @Override
@@ -38,8 +49,6 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
         return List.of();
     }
 
-    public static String wrongPlacementHelper = "com/simibubi/create/foundation/placement/IPlacementHelper";
-    public static String placementHelper = "net/createmod/catnip/placement/IPlacementHelper";
 
     public static String[] CStressValidMethods = {"setImpact", "setCapacity", "setNoImpact"};
 
@@ -77,13 +86,13 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                     
 //                    printInstruction(instruction);
                     if(method.name.equals("<clinit>")){
-                        methodInsn.append(insnToString(instruction, method)).append('\n');
+                        methodInsn.append(InstructionToString.instructionToString(instruction, method, targetClass)).append('\n');
                     }
 
                     if(deletingLine){
 
 
-                        if(instruction.getOpcode() == 192){
+                        if(instruction.getOpcode() == Opcodes.CHECKCAST){
                             deletingLine = false;
                             continue;
                         }
@@ -138,7 +147,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
             }
             //end method iters
 
-//            writeDumpFile(targetClassName, methodInsn.toString());
+            writeDumpFile(targetClassName, methodInsn.toString());
 
 
 
@@ -162,7 +171,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
                         if(insn instanceof TypeInsnNode typeNode){
 
-                            if(insn.getOpcode() == 187 && typeNode.desc.contains("BronzeSawMovementBehaviour")){
+                            if(insn.getOpcode() == Opcodes.NEW && typeNode.desc.contains("BronzeSawMovementBehaviour")){
                                 delCounter = 3;
 
                             }
@@ -225,75 +234,49 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
             for(MethodNode method : targetClass.methods){
 //                classInstructions.append("method: ").append(method.name).append(", desc: ").append(method.desc).append(", sig: ").append(method.signature).append('\n');
                 for(AbstractInsnNode insn : method.instructions){
-                    if(insn.getType() == AbstractInsnNode.VAR_INSN){
-                        VarInsnNode varInsn = (VarInsnNode) insn;
 
-                        LocalVariableNode localVariableNode = method.localVariables.get(varInsn.var);
-                        if(localVariableNode != null) {
-                            String desc = localVariableNode.desc;
-
-                            if(desc.equals("Lcom/simibubi/create/foundation/placement/IPlacementHelper;")){
-                                System.out.println("ye");
-                                localVariableNode.desc = "Lnet/createmod/catnip/placement/IPlacementHelper;";
-                                method.localVariables.set(varInsn.var, localVariableNode);
-                            }
-                        }
-
-//                        classInstructions.append(insnToString(varInsn, method));
-//                        classInstructions.append('\n');
-
-
-                    }else if (insn.getType() == AbstractInsnNode.METHOD_INSN){
-
-                        MethodInsnNode methodNode = (MethodInsnNode) insn;
-
-                        //fix method desc
-                        if(methodNode.desc.contains("com/simibubi/create/foundation/placement/IPlacementHelper")){
-                            methodNode.desc =
-                                    methodNode.desc.replace(wrongPlacementHelper, placementHelper);
-                        }/*else if(methodNode.desc.equals("(Lcom/simibubi/create/foundation/placement/IPlacementHelper;)I")){
-                            methodNode.desc = "(Lnet/createmod/catnip/placement/IPlacementHelper;)I";
-                        }*/
-
-                        if(methodNode.desc.contains("Lcom/simibubi/create/foundation/placement/PlacementOffset")){
-                            methodNode.desc = methodNode.desc.replace("Lcom/simibubi/create/foundation/placement/PlacementOffset", "Lnet/createmod/catnip/placement/PlacementOffset");
-                        }
-
-                        if(methodNode.owner.equals("com/simibubi/create/foundation/placement/PlacementHelpers")){
-                            methodNode.owner = "net/createmod/catnip/placement/PlacementHelpers";
-                        }else if(methodNode.owner.equals("com/simibubi/create/foundation/placement/IPlacementHelper")){
-                            methodNode.owner = "net/createmod/catnip/placement/IPlacementHelper";
-                        }else if(methodNode.owner.equals("com/simibubi/create/foundation/placement/PlacementOffset")){
-                            methodNode.owner = "net/createmod/catnip/placement/PlacementOffset";
-                        }
-
-
-
-//                        classInstructions.append(insnToString(methodNode, method));
-//                        classInstructions.append('\n');
-
-
-                    }/*else {
-
-                        classInstructions.append(insnToString(insn, method));
-                        classInstructions.append('\n');
-                    }*/
+                    InstructionFixers.fixIPlacementHelperInsn(insn, method);
 
                 }
+
             }
 
+        }
 
-//            writeDumpFile(targetClassName);
+        if(targetClassName.contains("BronzeDrillBlock")){
 
+            dumpClass(targetClassName, targetClass, true);
 
+            for(MethodNode method : targetClass.methods){
+//                classInstructions.append("method: ").append(method.name).append(", desc: ").append(method.desc).append(", sig: ").append(method.signature).append('\n');
+                for(AbstractInsnNode insn : method.instructions){
+
+                    InstructionFixers.fixIPlacementHelperInsn(insn, method);
+
+                }
+
+            }
+
+            dumpClass(targetClassName, targetClass, false);
         }
         //end bronze saw block checks
 
 
 
 
+    }
 
-//        System.exit(-1);
+    private static void dumpClass(String targetClassName, ClassNode targetClass, boolean before) {
+        ClassWriter writer = new ClassWriter(0);
+        targetClass.accept(writer);
+
+        File bytecodeDump = new File("C:\\Users\\gamma\\OneDrive\\Documents\\sources\\class-" + (before ? "before" : "after") + "-dump-" + targetClassName.substring(targetClassName.lastIndexOf('.') + 1) + ".class");
+
+        try {
+            Files.write(bytecodeDump.toPath(), writer.toByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void writeDumpFile(String targetClassName, String classInstructions) {
