@@ -45,6 +45,10 @@ public class InstructionToString {
                 if(!(instruction instanceof VarInsnNode varInsn))
                     break;
 
+                if(varInsn.var >= methodNode.localVariables.size()) {
+                    insns.append(" | METHOD BROKE");
+                    break;
+                }
 
                 LocalVariableNode localVariableNode = methodNode.localVariables.get(varInsn.var);
                 if(localVariableNode != null) {

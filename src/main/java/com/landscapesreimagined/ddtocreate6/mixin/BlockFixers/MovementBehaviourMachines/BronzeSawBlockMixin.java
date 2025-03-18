@@ -1,4 +1,4 @@
-package com.landscapesreimagined.ddtocreate6.mixin.BlockFixers;
+package com.landscapesreimagined.ddtocreate6.mixin.BlockFixers.MovementBehaviourMachines;
 
 import net.createmod.catnip.placement.IPlacementHelper;
 import net.createmod.catnip.placement.PlacementHelpers;
@@ -11,12 +11,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import uwu.lopyluna.create_dd.block.BlockProperties.bronze_saw.BronzeSawBlock;
-import uwu.lopyluna.create_dd.block.BlockProperties.drill.bronze.BronzeDrillBlock;
 
 import java.util.function.Predicate;
 
-@Mixin(BronzeDrillBlock.class)
-public class BronzeDrillBlockMixin {
+@Mixin(BronzeSawBlock.class)
+public class BronzeSawBlockMixin {
 
     private static int placemntHelperId = PlacementHelpers.register(new IPlacementHelper() {
         @Override

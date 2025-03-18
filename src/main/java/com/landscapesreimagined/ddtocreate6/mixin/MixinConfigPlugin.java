@@ -1,5 +1,6 @@
 package com.landscapesreimagined.ddtocreate6.mixin;
 
+import com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants;
 import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionFixers;
 import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionToString;
 import org.objectweb.asm.ClassWriter;
@@ -65,6 +66,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 //            } catch (IOException e) {
 //                throw new RuntimeException(e);
 //            }
+
+            dumpClass(targetClassName, targetClass, true);
 
 
 
@@ -137,7 +140,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 //                            System.out.println();
 //                        }
 
-                        printInstruction(instruction, method);
+//                        printInstruction(instruction, method);
 
                         method.instructions.remove(instruction);
 
@@ -147,7 +150,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
             }
             //end method iters
 
-            writeDumpFile(targetClassName, methodInsn.toString());
+//            writeDumpFile(targetClassName, methodInsn.toString());
 
 
 
@@ -171,7 +174,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
                         if(insn instanceof TypeInsnNode typeNode){
 
-                            if(insn.getOpcode() == Opcodes.NEW && typeNode.desc.contains("BronzeSawMovementBehaviour")){
+                            if(insn.getOpcode() == Opcodes.NEW &&
+                                    (typeNode.desc.contains("MovementBehaviour"))){
                                 delCounter = 3;
 
                             }
@@ -196,9 +200,18 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                     AbstractInsnNode insn = toRemove.removeLast();
 //                    toRemove.remove
 
+                    printInstruction(insn, method);
+
+
                     method.instructions.remove(insn);
 
-                    printInstruction(insn, method);
+                    targetClass.methods.replaceAll((methodNode -> {
+                        if(methodNode == method){
+                            return method;
+                        }
+                        return methodNode;
+                    }));
+
                 }
 
 
@@ -207,21 +220,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
             }
             //end method iterations
 
+            dumpClass(targetClassName, targetClass, false);
 
-
-
-
-
-//            ClassWriter writera = new ClassWriter(0);
-//            targetClass.accept(writera);
-//
-//            File bytecodeDumpa = new File("C:\\Users\\gamma\\OneDrive\\Documents\\sources\\class-after-dump-" + targetClassName.substring(targetClassName.lastIndexOf('.') + 1) + ".class");
-//
-//            try {
-//                java.nio.file.Files.write(bytecodeDumpa.toPath(), writera.toByteArray());
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
         }
         //end DDBlocks check
 
@@ -229,7 +229,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
         if(targetClassName.contains("BronzeSawBlock")){
 //            System.out.println("Targeting bronze saw block: " + targetClassName);
-//            StringBuilder classInstructions = new StringBuilder();
+            StringBuilder classString = new StringBuilder();
 
             for(MethodNode method : targetClass.methods){
 //                classInstructions.append("method: ").append(method.name).append(", desc: ").append(method.desc).append(", sig: ").append(method.signature).append('\n');
@@ -237,29 +237,82 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
                     InstructionFixers.fixIPlacementHelperInsn(insn, method);
 
+                    classString.append(InstructionToString.instructionToString(insn, method, targetClass)).append("\n");
+
+
                 }
 
             }
+
+//            writeDumpFile(targetClassName, classString.toString());
+
 
         }
 
-        if(targetClassName.contains("BronzeDrillBlock")){
+        if(targetClassName.contains("BronzeDrillBlock") ||
+                targetClassName.contains("RadiantDrillBlock") ||
+                targetClassName.contains("ShadowDrillBlock")){
 
-            dumpClass(targetClassName, targetClass, true);
+//            dumpClass(targetClassName, targetClass, true);
+
+            StringBuilder classString = new StringBuilder();
+
 
             for(MethodNode method : targetClass.methods){
-//                classInstructions.append("method: ").append(method.name).append(", desc: ").append(method.desc).append(", sig: ").append(method.signature).append('\n');
-                for(AbstractInsnNode insn : method.instructions){
+
+                 for(AbstractInsnNode insn : method.instructions){
 
                     InstructionFixers.fixIPlacementHelperInsn(insn, method);
+
+                    classString.append(InstructionToString.instructionToString(insn, method, targetClass)).append("\n");
 
                 }
 
             }
 
-            dumpClass(targetClassName, targetClass, false);
+            writeDumpFile(targetClassName, classString.toString());
+
+//            dumpClass(targetClassName, targetClass, false);
         }
         //end bronze saw block checks
+
+        //start BronzeDrillActorInstance
+//        if(targetClassName.contains("ActorInstance")){
+//
+//
+//            StringBuilder classString = new StringBuilder();
+//            for(MethodNode method : targetClass.methods){
+//                for(AbstractInsnNode insn : method.instructions){
+//                    classString.append(InstructionToString.instructionToString(insn, method, targetClass)).append('\n');
+//                }
+//            }
+//
+//            writeDumpFile(targetClassName, classString.toString());
+//        }
+
+        if(targetClassName.contains("BronzeDrillMovementBehaviour")){
+
+//            StringBuilder classString = new StringBuilder();
+            for(MethodNode method : targetClass.methods){
+
+                if(method.name.equals("createInstance")){
+                    InstructionFixers.createInstanceToCreateVisual(method, targetClass);
+                }
+
+//                classString.append("method: ").append(method.name)
+//                        .append(" desc: ").append(method.desc)
+//                        .append("\n");
+
+                for(AbstractInsnNode insn : method.instructions){
+//                    classString.append(InstructionToString.instructionToString(insn, method, targetClass)).append('\n');
+
+                    InstructionFixers.applyStaticInsnClassMoves(insn, method);
+                }
+            }
+
+//            writeDumpFile(targetClassName, classString.toString());
+
+        }
 
 
 

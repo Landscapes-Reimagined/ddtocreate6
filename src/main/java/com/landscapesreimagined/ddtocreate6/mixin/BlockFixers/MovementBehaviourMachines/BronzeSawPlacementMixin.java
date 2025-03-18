@@ -1,4 +1,4 @@
-package com.landscapesreimagined.ddtocreate6.mixin.BlockFixers;
+package com.landscapesreimagined.ddtocreate6.mixin.BlockFixers.MovementBehaviourMachines;
 
 import org.spongepowered.asm.mixin.Mixin;
 
