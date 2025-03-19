@@ -7,6 +7,7 @@
   "mixins": [
     "AddInstanceToCreateBlockEntityBuilder",
     "BronzeRendererSawFixer",
+    "BlockFixers.CogCrankBlockMixin",
     "BlockFixers.FanSailBlockMixin",
     "BlockFixers.FanSailBlockPlacementMixin",
     "BlockFixers.MovementBehaviourMachines.BronzeDrillActorInstanceMixin",

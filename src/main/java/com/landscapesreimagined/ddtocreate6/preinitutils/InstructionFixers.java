@@ -1,5 +1,7 @@
 package com.landscapesreimagined.ddtocreate6.preinitutils;
 
+import org.objectweb.asm.Handle;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 import java.util.HashMap;
@@ -83,8 +85,74 @@ public class InstructionFixers {
             minsn.desc = desc;
             minsn.owner = owner;
 
+        }else if(insn.getType() == AbstractInsnNode.INVOKE_DYNAMIC_INSN){
+            if(!(insn instanceof InvokeDynamicInsnNode idin)){
+                return;
+            }
+
+            String desc = idin.desc;
+
+            desc = replaceAllOldClasses(desc);
+
+            idin.desc = desc;
+
+            Object[] BSMArgs = idin.bsmArgs;
+
+            //Why do InvokeDynamic insns have to be difficult????
+            for(int i = 0; i < BSMArgs.length; i++){
+                Object o = BSMArgs[i];
+
+                if(o instanceof String s) {
+                    o = replaceAllOldClasses(s);
+                }
+
+                if(o instanceof Type t){
+
+                    if(t.getSort() != Type.OBJECT && t.getSort() != Type.METHOD)
+                        continue;
+
+                    String tdesc = t.getDescriptor();
+
+//                    System.out.println(tdesc);
+                    if(tdesc.contains(WRONG_COUPLE))
+                        System.out.println("AHA. BAsTARD!!!!");
+
+                    tdesc = replaceAllOldClasses(tdesc);
+
+                    o = Type.getType(tdesc);
+
+                }
+
+
+                if(o instanceof Handle h){
+
+                    //todo: bridges to cross when we get there: owner, name
+                    String handleDesc = h.getDesc();
+
+                    handleDesc = replaceAllOldClasses(handleDesc);
+
+                    o = new Handle(h.getTag(), h.getOwner(), h.getName(), handleDesc, h.isInterface());
+
+
+                }
+
+                BSMArgs[i] = o;
+            }
+
+            idin.bsmArgs = BSMArgs;
+
         }
 
+    }
+
+    private static String replaceAllOldClasses(String desc) {
+        for(final String oldClass : ONE_TO_ONE_CLASS_MOVES.keySet()){
+
+            final String newClass = ONE_TO_ONE_CLASS_MOVES.get(oldClass);
+
+            desc = desc.replaceAll(oldClass, newClass);
+        }
+        return desc;
     }
 
     public static void applyStaticMethodClassMoves(MethodNode method, ClassNode targetClass){
@@ -114,7 +182,7 @@ public class InstructionFixers {
 
         if(method.desc.equals(CREATE_INSTANCE_DESC)){
             method.name = "createVisual";
-            method.desc = CREATE_VISIUAL_DESC;
+            method.desc = CREATE_VISUAL_DESC;
         }
 
         targetClass.methods.set(index, method);
@@ -179,6 +247,8 @@ public class InstructionFixers {
 
         ONE_TO_ONE_CLASS_MOVES.put(WRONG_VEC_HELPER, VEC_HELPER);
         ONE_TO_ONE_CLASS_MOVES.put(WRONG_ACTOR_INSTANCE, ACTOR_INSTANCE);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_COUPLE, COUPLE);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_BLOCK_STRESS_DEFAULTS, NEW_BLOCK_STRESS_DEFAULTS);
 
     }
 }

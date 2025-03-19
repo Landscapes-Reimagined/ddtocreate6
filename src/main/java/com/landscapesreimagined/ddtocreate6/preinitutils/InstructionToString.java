@@ -9,6 +9,28 @@ import java.util.Locale;
 
 public class InstructionToString {
 
+    //array's toString for convienience
+    public static String toString(Object[] a) {
+        if (a == null)
+            return "null";
+
+        int iMax = a.length - 1;
+        if (iMax == -1)
+            return "[]";
+
+        StringBuilder b = new StringBuilder();
+        b.append('[');
+        for (int i = 0; ; i++) {
+            b.append(String.valueOf(a[i]));
+//            if(String.valueOf(a[i]).contains("Couple")){
+//                System.out.println("AAAAA" + a[i]);
+//            }
+            if (i == iMax)
+                return b.append(']').toString();
+            b.append(", ");
+        }
+    }
+
     //basic implementation to print an AbstractInsnNode
     public static String instructionToString(AbstractInsnNode instruction, MethodNode methodNode, ClassNode classNode){
 
@@ -113,7 +135,7 @@ public class InstructionToString {
                         .append(" | BSM Desc: ").append(idin.bsm.getDesc())
                         .append(" | BSM Owner: ").append(idin.bsm.getOwner());
 
-                insns.append(" | BSM Args: ").append(Arrays.toString(idin.bsmArgs));
+                insns.append(" | BSM Args: ").append(toString(idin.bsmArgs));
 
             }
             case AbstractInsnNode.JUMP_INSN: {

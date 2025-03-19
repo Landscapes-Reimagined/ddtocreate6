@@ -59,9 +59,11 @@ public class RegistrateUtil {
     }
 
 
-    public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> setGeneratorSpeed(Supplier<Couple<Double>> generatorRPM) {
+    public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> setGeneratorSpeed(Supplier<Couple<Integer>> generatorRPM) {
         return (builder) -> {
-            var stress = new BlockStressValues.GeneratedRpm( generatorRPM.get().get(false).intValue(), true);
+//            int maxRPM = 256;
+//            double maxRPMD = Math.round(generatorRPM.get().get(false));
+            var stress = new BlockStressValues.GeneratedRpm( generatorRPM.get().getSecond(), true);
             BlockStressValues.RPM.registerProvider((block) ->{
                 if(Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(block)).getPath().equals(builder.getName())){
                     return stress;

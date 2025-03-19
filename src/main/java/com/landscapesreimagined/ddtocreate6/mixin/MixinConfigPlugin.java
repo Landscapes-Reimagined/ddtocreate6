@@ -73,6 +73,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
             StringBuilder methodInsn = new StringBuilder();
             for(MethodNode method : targetClass.methods){
+
 //                boolean inRightMethod = false;
 //                if(){
 //                    inRightMethod = true;
@@ -153,14 +154,20 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 //            writeDumpFile(targetClassName, methodInsn.toString());
 
 
-
-
+            StringBuilder insns = new StringBuilder();
             for(MethodNode method : targetClass.methods){
+                InstructionFixers.applyStaticMethodClassMoves(method, targetClass);
                 boolean rightMethod = method.name.equals("<clinit>");
                 ArrayDeque<AbstractInsnNode> toRemove = new ArrayDeque<>();
                 int delCounter = 0;
 
                 for(AbstractInsnNode insn : method.instructions){
+
+
+                    //apply one to one type migrations
+                    InstructionFixers.applyStaticInsnClassMoves(insn, method);
+
+
                     if(insn instanceof MethodInsnNode methodNode && methodNode.owner.contains("BlockStressDefaults")){
 //                        System.out.println("Method: ");
 //                        System.out.println(" Method: " + methodNode.name + ", Desc: " + methodNode.desc + ", Owner: " + methodNode.owner);
@@ -219,6 +226,14 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
             }
             //end method iterations
+
+            for(MethodNode method : targetClass.methods){
+                for(AbstractInsnNode insn : method.instructions){
+                    insns.append(InstructionToString.instructionToString(insn, method, targetClass)).append("\n");
+                }
+            }
+
+            writeDumpFile(targetClassName, insns.toString());
 
             dumpClass(targetClassName, targetClass, false);
 
@@ -312,6 +327,16 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
 //            writeDumpFile(targetClassName, classString.toString());
 
+        }
+
+
+        if(targetClassName.substring(targetClassName.lastIndexOf('.') + 1).equals("CogCrankBlock")){
+            for(MethodNode method : targetClass.methods){
+                InstructionFixers.applyStaticMethodClassMoves(method, targetClass);
+                for(AbstractInsnNode insn : method.instructions){
+                    InstructionFixers.applyStaticInsnClassMoves(insn, method)   ;
+                }
+            }
         }
 
 
