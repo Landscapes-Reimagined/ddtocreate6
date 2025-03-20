@@ -54,7 +54,7 @@ public class RegistrateUtil {
         };
     }
 
-    public static NonNullConsumer<Block> setGeneratorSpeed(Supplier<Couple<Double>> generatorRPM, boolean mayGenerateLess) {
+    public static NonNullConsumer<Block> setGeneratorSpeed(Supplier<Couple<Integer>> generatorRPM, boolean mayGenerateLess) {
         return block -> BlockStressValues.RPM.register(block, new BlockStressValues.GeneratedRpm( generatorRPM.get().get(false).intValue(), mayGenerateLess));
     }
 

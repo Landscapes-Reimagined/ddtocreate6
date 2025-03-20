@@ -1,6 +1,7 @@
 package com.landscapesreimagined.ddtocreate6;
 
 import com.mojang.logging.LogUtils;
+import com.tterrag.registrate.util.DebugMarkers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.food.FoodProperties;
@@ -89,7 +90,7 @@ public class DreamsAndDesireToCreate6 {
         // Some common setup code
         event.enqueueWork(() -> {
             RegesteringNewlyRegistryDrivenStuff.registerNewMovementBehaviours();
-
+            RegesteringNewlyRegistryDrivenStuff.registerNewInteractionBehaviours();
 
         });
     }
@@ -115,8 +116,8 @@ public class DreamsAndDesireToCreate6 {
         public static void onClientSetup(FMLClientSetupEvent event)
         {
             // Some client setup code
-            LOGGER.info("HELLO FROM CLIENT SETUP");
-            LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+//            LOGGER.info("HELLO FROM CLIENT SETUP");
+//            LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
         }
     }
 }

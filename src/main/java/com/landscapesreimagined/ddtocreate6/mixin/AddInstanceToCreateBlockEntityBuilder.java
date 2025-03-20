@@ -18,10 +18,18 @@ public abstract class AddInstanceToCreateBlockEntityBuilder<T extends BlockEntit
         super(owner, parent, name, callback, factory);
     }
 
+    @SuppressWarnings("AddedMixinMembersNamePattern")
     @Unique
     public CreateBlockEntityBuilder<T, P> instance(
             NonNullSupplier<BiFunction<?, T, ?>> instanceFactory,
             boolean somETHING) {
+        return (CreateBlockEntityBuilder<T, P>) ((BlockEntityBuilder<T, P>) this);
+    }
+
+    @SuppressWarnings("AddedMixinMembersNamePattern")
+    @Unique
+    public CreateBlockEntityBuilder<T, P> instance(
+            NonNullSupplier<BiFunction<?, T, ?>> instanceFactory) {
         return (CreateBlockEntityBuilder<T, P>) ((BlockEntityBuilder<T, P>) this);
     }
 }

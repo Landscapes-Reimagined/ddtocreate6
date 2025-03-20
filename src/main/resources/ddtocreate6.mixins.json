@@ -7,9 +7,15 @@
   "mixins": [
     "AddInstanceToCreateBlockEntityBuilder",
     "BronzeRendererSawFixer",
+    "REGISTRATE_SHUT_UPMixin",
     "BlockFixers.CogCrankBlockMixin",
-    "BlockFixers.FanSailBlockMixin",
-    "BlockFixers.FanSailBlockPlacementMixin",
+    "BlockFixers.DDPalateBlockPartialMixin",
+    "BlockFixers.DDPaletteStoneTypesMixin",
+    "BlockFixers.PlacementFixerMultiTargetMixin",
+    "BlockFixers.SecondaryChainDriveBlockMixin",
+    "BlockFixers.buildertransgender.BuilderTransgenderMixin",
+    "BlockFixers.fan.FanSailBlockMixin",
+    "BlockFixers.fan.FanSailBlockPlacementMixin",
     "BlockFixers.MovementBehaviourMachines.BronzeDrillActorInstanceMixin",
     "BlockFixers.MovementBehaviourMachines.BronzeDrillBlockMixin",
     "BlockFixers.MovementBehaviourMachines.BronzeDrillMovementBehaviourMixin",
@@ -22,10 +28,13 @@
     "BlockFixers.MovementBehaviourMachines.ShadowDrillActorInstanceMixin",
     "BlockFixers.MovementBehaviourMachines.ShadowDrillBlockMixin",
     "BlockFixers.MovementBehaviourMachines.ShadowDrillPlacementMixin",
+    "BlockFixers.PotatoTurret.PotatoTurretBlockEntityMixin",
     "initfixers.DDBlocksFixer",
     "initfixers.DDBlockTagsMixin",
     "initfixers.DDFluidTagsMixin",
-    "initfixers.DDInitMixin"
+    "initfixers.DDInitMixin",
+    "initfixers.DDParticleTypesMixin",
+    "initfixers.DDRecipeTypesMixin"
   ],
   "client": [
   ],

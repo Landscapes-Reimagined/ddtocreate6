@@ -25,6 +25,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
             //load classes for use in preinit stuff
             this.getClass().getClassLoader().loadClass("com.landscapesreimagined.ddtocreate6.preinitutils.InstructionToString");
             this.getClass().getClassLoader().loadClass("com.landscapesreimagined.ddtocreate6.preinitutils.InstructionFixers");
+            this.getClass().getClassLoader().loadClass("com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants");
+
         } catch (ClassNotFoundException e) {
             System.out.println("aw man :(");
         }
@@ -55,6 +57,102 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
     @Override
     public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+
+        final String targetClassJavaName = targetClassName.substring(targetClassName.lastIndexOf('.') + 1);
+
+        //targetClassName.contains("uwu.lopyluna.create_dd.block.BlockProperties.copycat.BlockcopycatSlab")
+        if(mixinClassName.equals("com.landscapesreimagined.ddtocreate6.mixin.BlockFixers.PlacementFixerMultiTargetMixin")){
+            for(MethodNode method : targetClass.methods){
+                InstructionFixers.applyStaticMethodClassMoves(method, targetClass);
+                for(AbstractInsnNode insn : method.instructions){
+                    InstructionFixers.fixIPlacementHelperInsn(insn, method);
+
+                    InstructionFixers.applyStaticInsnClassMoves(insn, method);
+                }
+            }
+        }
+
+        if(targetClassName.substring(targetClassName.lastIndexOf('.') + 1).equals("ChainDriveBlock2")){
+//            System.out.println("Found interfaces on ChainDriveBlock2:");
+//            System.out.println(Arrays.toString(targetClass.interfaces.toArray()));
+//
+            for(int i = 0; i < targetClass.interfaces.size(); i++){
+
+                String interfaceClassName = targetClass.interfaces.get(i);
+
+                interfaceClassName = InstructionFixers.replaceAllOldClasses(interfaceClassName);
+
+                targetClass.interfaces.set(i, interfaceClassName);
+
+            }
+
+        }
+
+        if(targetClassJavaName.equals("BuilderTransgender")){
+            StringBuilder insns = new StringBuilder();
+
+            for(MethodNode method : targetClass.methods){
+                ArrayDeque<AbstractInsnNode> toRemove = new ArrayDeque<>();
+
+                insns.append("Method: ").append(method.name).append('\n');
+
+                int deleting = 0;
+                for(AbstractInsnNode insn : method.instructions){
+
+                    insns.append(InstructionToString.instructionToString(insn, method, targetClass)).append('\n');
+
+                    if(insn.getOpcode() == Opcodes.NEW && ((TypeInsnNode) insn).desc.equals("com/simibubi/create/content/contraptions/behaviour/DoorMovingInteraction")){
+                        deleting += 3;
+                    }
+
+                    if(insn.getOpcode() == Opcodes.INVOKESTATIC && ((MethodInsnNode) insn).desc.equals("(Lcom/simibubi/create/content/contraptions/behaviour/MovingInteractionBehaviour;)Lcom/tterrag/registrate/util/nullness/NonNullConsumer;")){
+                        deleting += 3;
+                    }
+
+                    if(insn.getOpcode() == Opcodes.NEW && ((TypeInsnNode) insn).desc.equals("com/simibubi/create/content/decoration/slidingDoor/SlidingDoorMovementBehaviour")){
+                        deleting += 3;
+                    }
+
+                    if(insn.getOpcode() == Opcodes.INVOKESTATIC && ((MethodInsnNode) insn).desc.equals("(Lcom/simibubi/create/content/contraptions/behaviour/MovementBehaviour;)Lcom/tterrag/registrate/util/nullness/NonNullConsumer;")){
+                        deleting += 3;
+                    }
+
+
+                    if(deleting > 0){
+                        toRemove.push(insn);
+                        deleting -= 1;
+                    }
+                }
+
+                while(!toRemove.isEmpty()){
+                    AbstractInsnNode insn = toRemove.removeLast();
+
+                    method.instructions.remove(insn);
+
+                }
+            }
+
+            writeDumpFile(targetClassName, insns.toString());
+
+        }
+
+        if(targetClassJavaName.equals("PotatoTurretBlockEntity")){
+            System.out.println("Found PotatoTurretBlockEntity");
+            System.out.println(Arrays.toString(targetClass.interfaces.toArray()));
+
+            targetClass.interfaces.clear();
+
+            for(FieldNode field : targetClass.fields){
+
+                InstructionFixers.applyStaticFieldClassMoves(field, targetClass);
+            }
+        }
+
+
+
+
+//        System.out.println(mixinClassName);
+
         if(targetClassName.equals("uwu.lopyluna.create_dd.block.DDBlocks")){
 //            ClassWriter writer = new ClassWriter(0);
 //            targetClass.accept(writer);
@@ -67,7 +165,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 //                throw new RuntimeException(e);
 //            }
 
-            dumpClass(targetClassName, targetClass, true);
+//            dumpClass(targetClassName, targetClass, true);
 
 
 
@@ -127,27 +225,12 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                     }
                 }
 
-//                if(instructionsToRemove.size() == 4 || instructionsToRemove.size() == 3){
                     for(AbstractInsnNode instruction : instructionsToRemove){
-//                        System.out.println("REMOVING!!!");
-//                        System.out.print("instruction: " + instruction.getOpcode() + " type: " + instruction.getType());
-//                        if(instruction.getType() == 8){
-//                            LabelNode label = (LabelNode) instruction;
-//                            System.out.println(" Label: " + label.getLabel());
-//                        }else if(instruction.getType() == 15){
-//                            LineNumberNode lnn = (LineNumberNode) instruction;
-//                            System.out.println(" line: " + lnn.line);
-//                        }else{
-//                            System.out.println();
-//                        }
-
-//                        printInstruction(instruction, method);
 
                         method.instructions.remove(instruction);
 
                     }
                     instructionsToRemove.clear();
-//                }
             }
             //end method iters
 
@@ -205,10 +288,6 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
                 while(!toRemove.isEmpty()){
                     AbstractInsnNode insn = toRemove.removeLast();
-//                    toRemove.remove
-
-                    printInstruction(insn, method);
-
 
                     method.instructions.remove(insn);
 
@@ -218,10 +297,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                         }
                         return methodNode;
                     }));
-
                 }
-
-
 
 
             }
@@ -233,9 +309,9 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                 }
             }
 
-            writeDumpFile(targetClassName, insns.toString());
+//            writeDumpFile(targetClassName, insns.toString());
 
-            dumpClass(targetClassName, targetClass, false);
+//            dumpClass(targetClassName, targetClass, false);
 
         }
         //end DDBlocks check
@@ -343,6 +419,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
 
     }
+
+
 
     private static void dumpClass(String targetClassName, ClassNode targetClass, boolean before) {
         ClassWriter writer = new ClassWriter(0);

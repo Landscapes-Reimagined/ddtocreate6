@@ -1,11 +1,6 @@
-package com.landscapesreimagined.ddtocreate6.mixin.BlockFixers;
+package com.landscapesreimagined.ddtocreate6.mixin.BlockFixers.fan;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.createmod.catnip.placement.PlacementHelpers;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import uwu.lopyluna.create_dd.block.BlockProperties.FanSailBlock;
 
 @Mixin(FanSailBlock.class)

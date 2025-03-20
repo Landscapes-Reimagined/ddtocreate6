@@ -1,9 +1,11 @@
 package com.landscapesreimagined.ddtocreate6.preinitutils;
 
 import org.objectweb.asm.Handle;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
+import java.util.ArrayDeque;
 import java.util.HashMap;
 
 //yummy constants :3
@@ -114,8 +116,8 @@ public class InstructionFixers {
                     String tdesc = t.getDescriptor();
 
 //                    System.out.println(tdesc);
-                    if(tdesc.contains(WRONG_COUPLE))
-                        System.out.println("AHA. BAsTARD!!!!");
+//                    if(tdesc.contains(WRONG_COUPLE))
+//                        System.out.println("AHA. BAsTARD!!!!");
 
                     tdesc = replaceAllOldClasses(tdesc);
 
@@ -145,7 +147,12 @@ public class InstructionFixers {
 
     }
 
-    private static String replaceAllOldClasses(String desc) {
+    /**
+     * Replaces all old classes found in the desc string with their update 6 counterparts
+     * @param desc Type description to replace in
+     * @return The updated and hopefully correct desc string
+     */
+    public static String replaceAllOldClasses(String desc) {
         for(final String oldClass : ONE_TO_ONE_CLASS_MOVES.keySet()){
 
             final String newClass = ONE_TO_ONE_CLASS_MOVES.get(oldClass);
@@ -155,6 +162,14 @@ public class InstructionFixers {
         return desc;
     }
 
+    /**
+     * Shorthand for the method transformation that executes
+     * all the one-to-one class movement transformations added to
+     * the {@link InstructionFixers#ONE_TO_ONE_CLASS_MOVES} HashMap.<br><br>
+     * Transforms Variable and Method instructions.<hr>
+     * @param method Method to transform
+     * @param targetClass class the method belongs to
+     */
     public static void applyStaticMethodClassMoves(MethodNode method, ClassNode targetClass){
         int index = 0;
         for(int i = 0; i < targetClass.methods.size(); i++){
@@ -169,6 +184,50 @@ public class InstructionFixers {
         }
 
         targetClass.methods.set(index, method);
+    }
+
+    public static void applyStaticFieldClassMoves(FieldNode field, ClassNode targetClass){
+
+        //don't want to modify static fields for now
+        if((field.access & Opcodes.ACC_STATIC) != 0)
+            return;
+
+        int index = 0;
+        for(int i = 0; i < targetClass.methods.size(); i++){
+            if(targetClass.fields.get(i).equals(field)) {
+                index = i;
+                break;
+            }
+        }
+
+        String desc = field.desc;
+
+        final String finalDesc = desc;
+        if(ONE_TO_ONE_CLASS_MOVES.keySet().stream().noneMatch(finalDesc::contains))
+            return;
+
+        desc = replaceAllOldClasses(desc);
+
+        field.desc = desc;
+
+//        targetClass.fields.set(index, field);
+//        targetClass.fields;
+
+    }
+
+    public static void removeAllInstructions(ClassNode targetClass, MethodNode method, ArrayDeque<AbstractInsnNode> toRemove) {
+        while(!toRemove.isEmpty()){
+            AbstractInsnNode insn = toRemove.removeLast();
+
+            method.instructions.remove(insn);
+
+            targetClass.methods.replaceAll((methodNode -> {
+                if(methodNode == method){
+                    return method;
+                }
+                return methodNode;
+            }));
+        }
     }
 
     public static void createInstanceToCreateVisual(MethodNode method, ClassNode targetClass){
@@ -187,6 +246,8 @@ public class InstructionFixers {
 
         targetClass.methods.set(index, method);
     }
+
+
 
 
 
@@ -242,6 +303,7 @@ public class InstructionFixers {
         }
     }
 
+
     //add all of the class movements
     static {
 
@@ -249,6 +311,9 @@ public class InstructionFixers {
         ONE_TO_ONE_CLASS_MOVES.put(WRONG_ACTOR_INSTANCE, ACTOR_INSTANCE);
         ONE_TO_ONE_CLASS_MOVES.put(WRONG_COUPLE, COUPLE);
         ONE_TO_ONE_CLASS_MOVES.put(WRONG_BLOCK_STRESS_DEFAULTS, NEW_BLOCK_STRESS_DEFAULTS);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_TRANSFORMABLE_BLOCK, TRANSFORMABLE_BLOCK);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_GOGGLE_INFORMATION, GOGGLE_INFORMATION);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_LERPED_FLOAT, LERPED_FLOAT);
 
     }
 }
