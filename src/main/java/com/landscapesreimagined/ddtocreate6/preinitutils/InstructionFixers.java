@@ -221,12 +221,12 @@ public class InstructionFixers {
 
             method.instructions.remove(insn);
 
-            targetClass.methods.replaceAll((methodNode -> {
-                if(methodNode == method){
-                    return method;
-                }
-                return methodNode;
-            }));
+//            targetClass.methods.replaceAll((methodNode -> {
+//                if(methodNode == method){
+//                    return method;
+//                }
+//                return methodNode;
+//            }));
         }
     }
 

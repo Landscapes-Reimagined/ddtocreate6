@@ -5,6 +5,7 @@ import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionFixers;
 import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionToString;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.util.Textifier;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -55,6 +56,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
     public static String[] CStressValidMethods = {"setImpact", "setCapacity", "setNoImpact"};
 
+    @SuppressWarnings("MismatchedQueryAndUpdateOfStringBuilder")
     @Override
     public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
 
@@ -132,7 +134,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                 }
             }
 
-            writeDumpFile(targetClassName, insns.toString());
+//            writeDumpFile(targetClassName, insns.toString());
 
         }
 
@@ -146,6 +148,47 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
                 InstructionFixers.applyStaticFieldClassMoves(field, targetClass);
             }
+        }
+
+        if(targetClassJavaName.equals("DDConfigs")){
+            StringBuilder insns = new StringBuilder();
+
+            for(MethodNode method : targetClass.methods){
+                insns.append("Method: ").append(method.name).append('\n');
+
+                if(method.name.equals("register") && method.desc.contains("ModLoadingContext")){
+                    ArrayDeque<AbstractInsnNode> toRemove = new ArrayDeque<>();
+
+                    int deleting = 0;
+                    for(AbstractInsnNode insn : method.instructions){
+
+                        if(insn.getOpcode() == Opcodes.INVOKESTATIC && ((MethodInsnNode) insn).owner.contains("uwu/lopyluna/create_dd/configs/DDConfigs")){
+                            method.instructions.insertBefore(insn, new MethodInsnNode(
+                                    Opcodes.INVOKESTATIC,
+                                    "com/landscapesreimagined/ddtocreate6/util/Redirects",
+                                    "registerProvider",
+                                    "(Ljava/lang/String;)V"
+                                    ));
+                            deleting = 4;
+                        }
+
+                        if(deleting > 0){
+                            toRemove.push(insn);
+                            deleting -= 1;
+                        }
+
+
+                    }
+
+                    InstructionFixers.removeAllInstructions(targetClass, method, toRemove);
+                }
+
+                for(AbstractInsnNode insn : method.instructions){
+                    insns.append(InstructionToString.instructionToString(insn, method, targetClass)).append('\n');
+                }
+            }
+
+            writeDumpFile(targetClassName, insns.toString());
         }
 
 
