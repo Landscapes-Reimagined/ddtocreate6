@@ -33,6 +33,34 @@ public class ClassConstants {
     public static final String WRONG_LERPED_FLOAT = "com/simibubi/create/foundation/utility/animation/LerpedFloat";
     public static final String LERPED_FLOAT = "net/createmod/catnip/animation/LerpedFloat";
 
+    //PartialModel
+    public static final String WRONG_PARTIAL_MODEL = "com/jozufozu/flywheel/core/PartialModel";
+    public static final String PARTIAL_MODEL = "dev/engine_room/flywheel/lib/model/baked/PartialModel";
+
+    //SuperByteBuffer
+    public static final String WRONG_SUPER_BYTE_BUFFER = "com/simibubi/create/foundation/render/SuperByteBuffer";
+    public static final String SUPER_BYTE_BUFFER = "net/createmod/catnip/render/SuperByteBuffer";
+
+    //CachedBuffers
+    public static final String WRONG_CACHED_BUFFERER = "com/simibubi/create/foundation/render/CachedBufferer";
+    public static final String CACHED_BUFFERS = "net/createmod/catnip/render/CachedBuffers";
+
+    //VirtualRenderWorld
+    public static final String WRONG_VIRTUAL_RENDER_WORLD = "com/jozufozu/flywheel/core/virtual/VirtualRenderWorld";
+    public static final String VIRTUAL_RENDER_WORLD = "com/simibubi/create/foundation/virtualWorld/VirtualRenderWorld";
+
+    //AngleHelper
+    public static final String WRONG_ANGLE_HELPER = "com/simibubi/create/foundation/utility/AngleHelper";
+    public static final String ANGLE_HELPER = "net/createmod/catnip/math/AngleHelper";
+
+    //AnimationTickHolder
+    public static final String WRONG_ANIMATION_TICK_HOLDER = "com/simibubi/create/foundation/utility/AnimationTickHolder";
+    public static final String ANIMATION_TICK_HOLDER = "net/createmod/catnip/animation/AnimationTickHolder";
+
+    //TransformStack
+    public static final String WRONG_TRANSFORM_STACK = "com/jozufozu/flywheel/util/transform/TransformStack";
+    public static final String TRANSFORM_STACK = "dev/engine_room/flywheel/lib/transform/TransformStack";
+
     //relics of the Old Way
     public static final String wrongPlacementOffset = "Lcom/simibubi/create/foundation/placement/PlacementOffset";
     public static final String placementOffset = "Lnet/createmod/catnip/placement/PlacementOffset";

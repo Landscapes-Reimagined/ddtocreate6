@@ -186,7 +186,7 @@ public class InstructionFixers {
         targetClass.methods.set(index, method);
     }
 
-    public static void applyStaticFieldClassMoves(FieldNode field, ClassNode targetClass){
+    public static synchronized void applyFieldClassMoves(FieldNode field, ClassNode targetClass){
 
         //don't want to modify static fields for now
         if((field.access & Opcodes.ACC_STATIC) != 0)
@@ -203,14 +203,51 @@ public class InstructionFixers {
         String desc = field.desc;
 
         final String finalDesc = desc;
-        if(ONE_TO_ONE_CLASS_MOVES.keySet().stream().noneMatch(finalDesc::contains))
+        if(ONE_TO_ONE_CLASS_MOVES.keySet().stream().noneMatch(finalDesc::contains)) {
             return;
+        }
 
         desc = replaceAllOldClasses(desc);
 
         field.desc = desc;
 
-//        targetClass.fields.set(index, field);
+        targetClass.fields.set(index, field);
+//        targetClass.fields;
+
+    }
+    public static synchronized void applyStaticFieldClassMoves(FieldNode field, ClassNode targetClass){
+
+        //only want to modify static fields for now
+        if((field.access & Opcodes.ACC_STATIC) == 0)
+            return;
+
+        int index = 0;
+        for(int i = 0; i < targetClass.methods.size(); i++){
+            if(targetClass.fields.get(i).equals(field)) {
+                index = i;
+                break;
+            }
+        }
+
+        String desc = field.desc;
+
+        final String finalDesc = desc;
+        if(ONE_TO_ONE_CLASS_MOVES.keySet().stream().noneMatch(finalDesc::contains)) {
+            return;
+        }
+
+        desc = replaceAllOldClasses(desc);
+
+        field.desc = desc;
+
+//        String name = field.name;
+//        String signature = field.signature;
+//        FieldNode newField = new FieldNode(field.access, field.name, field.signature, desc, field.value);
+//
+////        field.desc = desc;
+//
+//        targetClass.fields.remove(field);
+//        targetClass.fields.add(newField);
 //        targetClass.fields;
 
     }
@@ -227,6 +264,16 @@ public class InstructionFixers {
 //                }
 //                return methodNode;
 //            }));
+        }
+    }
+
+    //lets not get a concurrent modification exception
+    public static synchronized void removeAllFields(ClassNode targetClass, ArrayDeque<FieldNode> toRemove) {
+        while(!toRemove.isEmpty()){
+            FieldNode field = toRemove.removeLast();
+
+            targetClass.fields.remove(field);
+
         }
     }
 
@@ -314,6 +361,14 @@ public class InstructionFixers {
         ONE_TO_ONE_CLASS_MOVES.put(WRONG_TRANSFORMABLE_BLOCK, TRANSFORMABLE_BLOCK);
         ONE_TO_ONE_CLASS_MOVES.put(WRONG_GOGGLE_INFORMATION, GOGGLE_INFORMATION);
         ONE_TO_ONE_CLASS_MOVES.put(WRONG_LERPED_FLOAT, LERPED_FLOAT);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_PARTIAL_MODEL, PARTIAL_MODEL);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_SUPER_BYTE_BUFFER, SUPER_BYTE_BUFFER);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_CACHED_BUFFERER, CACHED_BUFFERS);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_VIRTUAL_RENDER_WORLD, VIRTUAL_RENDER_WORLD);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_ANGLE_HELPER, ANGLE_HELPER);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_ANIMATION_TICK_HOLDER, ANIMATION_TICK_HOLDER);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_TRANSFORM_STACK, TRANSFORM_STACK);
+
 
     }
 }

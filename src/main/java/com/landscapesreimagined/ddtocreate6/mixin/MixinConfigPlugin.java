@@ -1,19 +1,16 @@
 package com.landscapesreimagined.ddtocreate6.mixin;
 
-import com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants;
 import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionFixers;
 import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionToString;
+import com.landscapesreimagined.ddtocreate6.preinitutils.LookAroundMatchers;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
-import org.objectweb.asm.util.Textifier;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.util.*;
 
@@ -62,6 +59,25 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
         final String targetClassJavaName = targetClassName.substring(targetClassName.lastIndexOf('.') + 1);
 
+
+        final String mixinJavaName = mixinClassName.substring(mixinClassName.lastIndexOf('.') + 1);
+
+        if(mixinJavaName.equals("RendererFixer")){
+            for(FieldNode f : targetClass.fields) {
+                InstructionFixers.applyFieldClassMoves(f, targetClass);
+                InstructionFixers.applyStaticFieldClassMoves(f, targetClass);
+            }
+
+            for(MethodNode m : targetClass.methods){
+                InstructionFixers.applyStaticMethodClassMoves(m, targetClass);
+
+                for(AbstractInsnNode insn : m.instructions){
+                    InstructionFixers.applyStaticInsnClassMoves(insn, m);
+                }
+            }
+        }
+
+
         //targetClassName.contains("uwu.lopyluna.create_dd.block.BlockProperties.copycat.BlockcopycatSlab")
         if(mixinClassName.equals("com.landscapesreimagined.ddtocreate6.mixin.BlockFixers.PlacementFixerMultiTargetMixin")){
             for(MethodNode method : targetClass.methods){
@@ -72,6 +88,26 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                     InstructionFixers.applyStaticInsnClassMoves(insn, method);
                 }
             }
+        }
+
+        if(targetClassJavaName.equals("DDBlockPartialModel")){
+
+            for(FieldNode field : targetClass.fields){
+
+                InstructionFixers.applyStaticFieldClassMoves(field, targetClass);
+
+            }
+
+            for(MethodNode method : targetClass.methods){
+                InstructionFixers.applyStaticMethodClassMoves(method, targetClass);
+                for(AbstractInsnNode insn : method.instructions){
+                    InstructionFixers.fixIPlacementHelperInsn(insn, method);
+
+                    InstructionFixers.applyStaticInsnClassMoves(insn, method);
+                }
+            }
+
+            dumpClass(targetClassName, targetClass, false);
         }
 
         if(targetClassName.substring(targetClassName.lastIndexOf('.') + 1).equals("ChainDriveBlock2")){
@@ -144,51 +180,53 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
             targetClass.interfaces.clear();
 
+
             for(FieldNode field : targetClass.fields){
 
-                InstructionFixers.applyStaticFieldClassMoves(field, targetClass);
+                InstructionFixers.applyFieldClassMoves(field, targetClass);
             }
+
+
         }
 
-        if(targetClassJavaName.equals("DDConfigs")){
-            StringBuilder insns = new StringBuilder();
+        if(targetClassJavaName.equals("DDKinetics")){
+            {
+                ArrayDeque<FieldNode> toRemove = new ArrayDeque<>();
+
+                for (FieldNode f : targetClass.fields) {
+                    if (f.name.equals("stressValues")) {
+                        toRemove.push(f);
+                    }
+                }
+
+                InstructionFixers.removeAllFields(targetClass, toRemove);
+            }
+
+            int[] opcodes = new int[]{Opcodes.ALOAD, Opcodes.ALOAD, Opcodes.ICONST_1, Opcodes.INVOKEDYNAMIC};
+
+            LookAroundMatchers.Matcher m = new LookAroundMatchers.SimpleOpcodeMatcher(4, opcodes);
 
             for(MethodNode method : targetClass.methods){
-                insns.append("Method: ").append(method.name).append('\n');
-
-                if(method.name.equals("register") && method.desc.contains("ModLoadingContext")){
+                if(method.name.equals("<init>")){
                     ArrayDeque<AbstractInsnNode> toRemove = new ArrayDeque<>();
 
                     int deleting = 0;
+
                     for(AbstractInsnNode insn : method.instructions){
 
-                        if(insn.getOpcode() == Opcodes.INVOKESTATIC && ((MethodInsnNode) insn).owner.contains("uwu/lopyluna/create_dd/configs/DDConfigs")){
-                            method.instructions.insertBefore(insn, new MethodInsnNode(
-                                    Opcodes.INVOKESTATIC,
-                                    "com/landscapesreimagined/ddtocreate6/util/Redirects",
-                                    "registerProvider",
-                                    "(Ljava/lang/String;)V"
-                                    ));
-                            deleting = 4;
+                        if(LookAroundMatchers.lookAhead(m, insn, method, targetClass)){
+                            deleting = 13;//lot of stuff to remove, java is so funky...
                         }
 
                         if(deleting > 0){
                             toRemove.push(insn);
                             deleting -= 1;
                         }
-
-
                     }
 
                     InstructionFixers.removeAllInstructions(targetClass, method, toRemove);
                 }
-
-                for(AbstractInsnNode insn : method.instructions){
-                    insns.append(InstructionToString.instructionToString(insn, method, targetClass)).append('\n');
-                }
             }
-
-            writeDumpFile(targetClassName, insns.toString());
         }
 
 

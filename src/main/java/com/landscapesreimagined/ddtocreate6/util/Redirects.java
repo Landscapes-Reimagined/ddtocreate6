@@ -14,10 +14,10 @@ public class Redirects {
 
         DDStress stress = ((StressValueProvider) DDConfigs.server().kinetics).getDdtocreate6$stressValues();
 
-        BlockStressValues.IMPACTS.registerProvider(stress::getImpactSupplier);
-        BlockStressValues.CAPACITIES.registerProvider(stress::getCapacitySupplier);
-
-        BlockStressValues.RPM.registerProvider(stress::getGeneratedRPM);
+//        BlockStressValues.IMPACTS.registerProvider(stress::getImpactSupplier);
+//        BlockStressValues.CAPACITIES.registerProvider(stress::getCapacitySupplier);
+//
+//        BlockStressValues.RPM.registerProvider(stress::getGeneratedRPM);
 
     }
 

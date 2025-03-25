@@ -1,4 +1,4 @@
-package com.landscapesreimagined.ddtocreate6.mixin;
+package com.landscapesreimagined.ddtocreate6.mixin.BlockFixers.rendererFixers;
 
 import com.landscapesreimagined.ddtocreate6.replaced.ReplacedDDBlockPartialModel;
 import com.mojang.blaze3d.vertex.PoseStack;
