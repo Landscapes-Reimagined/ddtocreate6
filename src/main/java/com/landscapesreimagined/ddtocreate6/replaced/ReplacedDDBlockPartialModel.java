@@ -31,6 +31,11 @@ public class ReplacedDDBlockPartialModel {
     public static final PartialModel FLYWHEEL_LOWER_ROTATING = block("flywheel/lower_rotating_connector");
     public static final PartialModel FLYWHEEL_UPPER_SLIDING = block("flywheel/upper_sliding_connector");
     public static final PartialModel FLYWHEEL_LOWER_SLIDING = block("flywheel/lower_sliding_connector");
+
+    public static final PartialModel
+            TWO_BLADE_FAN = block("2_blade_fan/block"),
+            FOUR_BLADE_FAN = block("4_blade_fan/block"),
+            EIGHT_BLADE_FAN = block("8_blade_fan/block");
     public static final Map<ResourceLocation, Couple<PartialModel>> FOLDING_DOORS = new HashMap();
 
     public ReplacedDDBlockPartialModel() {

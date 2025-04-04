@@ -63,6 +63,21 @@ public class InstructionFixers {
 
             method.localVariables.set(vinsn.var, lvn);
 
+        } else if (insn.getType() == AbstractInsnNode.FIELD_INSN){
+          if(!(insn instanceof FieldInsnNode fieldInsn)){
+              return;
+          }
+
+          String desc = fieldInsn.desc;
+          String owner = fieldInsn.owner;
+
+          desc = replaceAllOldClasses(desc);
+          owner = replaceAllOldClasses(owner);
+
+          fieldInsn.desc = desc;
+          fieldInsn.owner = owner;
+
+
         } else if (insn.getType() == AbstractInsnNode.METHOD_INSN) {
             if(!(insn instanceof MethodInsnNode minsn)){
                 return;
@@ -115,10 +130,6 @@ public class InstructionFixers {
 
                     String tdesc = t.getDescriptor();
 
-//                    System.out.println(tdesc);
-//                    if(tdesc.contains(WRONG_COUPLE))
-//                        System.out.println("AHA. BAsTARD!!!!");
-
                     tdesc = replaceAllOldClasses(tdesc);
 
                     o = Type.getType(tdesc);
@@ -143,8 +154,34 @@ public class InstructionFixers {
 
             idin.bsmArgs = BSMArgs;
 
+        }else if(insn.getType() == AbstractInsnNode.TYPE_INSN){
+            if(!(insn instanceof TypeInsnNode typeInsnNode)){
+                return;
+            }
+
+            String desc = typeInsnNode.desc;
+
+            desc = replaceAllOldClasses(desc);
+
+            typeInsnNode.desc = desc;
+
+
         }
 
+    }
+
+    /**
+     * Renames all of the interfaces in the specified class
+     * @param node input class
+     */
+    public static void applyStaticInterfaceMoves(ClassNode node){
+        for(int i = 0; i < node.interfaces.size(); i++){
+            String interfaceStr = node.interfaces.get(i);
+
+            interfaceStr = replaceAllOldClasses(interfaceStr);
+
+            node.interfaces.set(i, interfaceStr);
+        }
     }
 
     /**
@@ -295,9 +332,6 @@ public class InstructionFixers {
     }
 
 
-
-
-
     public static void fixIPlacementHelperInsn(AbstractInsnNode insn, MethodNode method){
         if(insn.getType() == AbstractInsnNode.VAR_INSN){
             VarInsnNode varInsn = (VarInsnNode) insn;
@@ -368,6 +402,12 @@ public class InstructionFixers {
         ONE_TO_ONE_CLASS_MOVES.put(WRONG_ANGLE_HELPER, ANGLE_HELPER);
         ONE_TO_ONE_CLASS_MOVES.put(WRONG_ANIMATION_TICK_HOLDER, ANIMATION_TICK_HOLDER);
         ONE_TO_ONE_CLASS_MOVES.put(WRONG_TRANSFORM_STACK, TRANSFORM_STACK);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_WRAPPED_WORLD, WRAPPED_BLOCK_AND_TINT_GETTER);
+        ONE_TO_ONE_CLASS_MOVES.put(wrongPlacementHelper, placementHelper);
+        ONE_TO_ONE_CLASS_MOVES.put(wrongPlacementOffset, placementOffset);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_TOOLIP_HELPER, FONT_HELPER);
+//        ONE_TO_ONE_CLASS_MOVES.put(WRONG_DD_PARTIAL_BLOCK_MODELS, RIGHT_PARTIAL_BLOCK_MODELS);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_VOXEL_SHAPER, VOXEL_SHAPER);
 
 
     }

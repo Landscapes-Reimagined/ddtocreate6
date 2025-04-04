@@ -16,4 +16,17 @@ public class REGISTRATE_SHUT_UPMixin {
         //please. registrate. why. i want readable logs.
     }
 
+    @WrapOperation(
+            method = "onRegister",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lorg/apache/logging/log4j/Logger;debug(Lorg/apache/logging/log4j/Marker;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V",
+                    ordinal = 1
+            ),
+            remap = false
+    )
+    public void STOP_AGAIN(Logger instance, Marker marker, String s, Object o, Object o1, Operation<Void> original){
+
+    }
+
 }

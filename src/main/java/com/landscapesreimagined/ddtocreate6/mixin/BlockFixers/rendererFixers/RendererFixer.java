@@ -14,6 +14,7 @@ import uwu.lopyluna.create_dd.block.BlockProperties.hydraulic_press.HydraulicPre
 import uwu.lopyluna.create_dd.block.BlockProperties.industrial_fan.IndustrialFanRenderer;
 import uwu.lopyluna.create_dd.block.BlockProperties.kinetic_motor.KineticMotorRenderer;
 import uwu.lopyluna.create_dd.block.BlockProperties.potato_turret.PotatoTurretRenderer;
+import uwu.lopyluna.create_dd.item.ItemProperties.sawtool.ForestRavagerRender;
 
 //gotta love giant ass multitargets :3
 @Mixin(value = {
@@ -29,7 +30,7 @@ import uwu.lopyluna.create_dd.block.BlockProperties.potato_turret.PotatoTurretRe
         HydraulicPressRenderer.class,
         IndustrialFanRenderer.class,
         KineticMotorRenderer.class,
-        PotatoTurretRenderer.class
+        PotatoTurretRenderer.class,
     }
 )
 public class RendererFixer {

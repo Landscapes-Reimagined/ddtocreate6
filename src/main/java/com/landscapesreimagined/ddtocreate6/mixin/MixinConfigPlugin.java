@@ -1,5 +1,6 @@
 package com.landscapesreimagined.ddtocreate6.mixin;
 
+import com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants;
 import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionFixers;
 import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionToString;
 import com.landscapesreimagined.ddtocreate6.preinitutils.LookAroundMatchers;
@@ -11,6 +12,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.util.*;
 
@@ -59,36 +61,100 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
         final String targetClassJavaName = targetClassName.substring(targetClassName.lastIndexOf('.') + 1);
 
-
         final String mixinJavaName = mixinClassName.substring(mixinClassName.lastIndexOf('.') + 1);
 
+        if(targetClassJavaName.equals("DDCreate")){
+            executeAllNormalInstructionFixers(targetClass);
+        }
+
         if(mixinJavaName.equals("RendererFixer")){
-            for(FieldNode f : targetClass.fields) {
-                InstructionFixers.applyFieldClassMoves(f, targetClass);
-                InstructionFixers.applyStaticFieldClassMoves(f, targetClass);
-            }
+            executeAllNormalInstructionFixers(targetClass);
+        }
 
-            for(MethodNode m : targetClass.methods){
-                InstructionFixers.applyStaticMethodClassMoves(m, targetClass);
+        if(mixinJavaName.equals("GeneralFixerMultiTargetMixin")){
+            executeAllNormalInstructionFixers(targetClass);
+        }
 
-                for(AbstractInsnNode insn : m.instructions){
-                    InstructionFixers.applyStaticInsnClassMoves(insn, m);
+        if(targetClassJavaName.equals("EightBladeFanBlockEntity")){
+            dumpClass(targetClassName, targetClass, true);
+            executeAllNormalInstructionFixers(targetClass);
+            dumpClass(targetClassName, targetClass, false);
+
+        }
+
+        if(targetClassJavaName.contains("EngineBlock")){
+            executeAllNormalInstructionFixers(targetClass);
+        }
+
+        if(targetClassJavaName.contains("DeforesterItem") || targetClassJavaName.equals("ForestRavagerItem")){
+            executeAllNormalInstructionFixers(targetClass);
+        }
+
+        if(targetClassJavaName.contains("ForestRavagerRender") || targetClassJavaName.contains("DeforesterRender")){
+            executeAllNormalInstructionFixers(targetClass);
+
+            for(MethodNode method : targetClass.methods){
+                if(method.name.equals("<clinit>")){
+                    int deleteCounter = 0;
+                    ArrayDeque<AbstractInsnNode> toRemove = new ArrayDeque<>();
+                    for(AbstractInsnNode insnNode : method.instructions){
+                        if(insnNode.getOpcode() == Opcodes.NEW && ((TypeInsnNode) insnNode).desc.contains("PartialModel")){
+                            deleteCounter = 2;
+                        }else if(insnNode.getOpcode() == Opcodes.INVOKESPECIAL && ((MethodInsnNode) insnNode).owner.contains("PartialModel")){
+                            deleteCounter = 1;
+                            MethodInsnNode invokeStaticPartialModelOf = new MethodInsnNode(
+                                    Opcodes.INVOKESTATIC,
+                                    "dev/engine_room/flywheel/lib/model/baked/PartialModel",
+                                    "of",
+                                    "(Lnet/minecraft/resources/ResourceLocation;)Ldev/engine_room/flywheel/lib/model/baked/PartialModel;"
+
+                            );
+                            method.instructions.insertBefore(insnNode, invokeStaticPartialModelOf);
+                        }
+
+                        if(deleteCounter > 0){
+                            toRemove.push(insnNode);
+                            --deleteCounter;
+                        }
+                    }
+                    InstructionFixers.removeAllInstructions(targetClass, method, toRemove);
                 }
             }
         }
+
+//        if(targetClassJavaName.contains("Fur"))
 
 
         //targetClassName.contains("uwu.lopyluna.create_dd.block.BlockProperties.copycat.BlockcopycatSlab")
         if(mixinClassName.equals("com.landscapesreimagined.ddtocreate6.mixin.BlockFixers.PlacementFixerMultiTargetMixin")){
+            StringBuilder insnDump = new StringBuilder();
+
+            InstructionFixers.applyStaticInterfaceMoves(targetClass);
+
+
             for(MethodNode method : targetClass.methods){
+                if(targetClassJavaName.contains("FanSailBlock")){
+                    insnDump.append("method: ").append(method.name).append("\n");
+                }
                 InstructionFixers.applyStaticMethodClassMoves(method, targetClass);
                 for(AbstractInsnNode insn : method.instructions){
+
                     InstructionFixers.fixIPlacementHelperInsn(insn, method);
 
                     InstructionFixers.applyStaticInsnClassMoves(insn, method);
+
+                    if(targetClassJavaName.contains("FanSailBlock")){
+                        insnDump.append(InstructionToString.instructionToString(insn, method, targetClass)).append("\n");
+                    }
                 }
             }
+
+            if(targetClassJavaName.contains("FanSailBlock")){
+                writeDumpFile(targetClassName, insnDump.toString());
+            }
         }
+
+
 
         if(targetClassJavaName.equals("DDBlockPartialModel")){
 
@@ -109,6 +175,29 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
             dumpClass(targetClassName, targetClass, false);
         }
+
+        //todo: test and finish!!
+        if(targetClassJavaName.equals("Redirects")){
+
+//            dumpClass(targetClassName, targetClass, true);
+
+            StringBuilder builder = new StringBuilder();
+
+            for(MethodNode method : targetClass.methods){
+                builder.append("method: ").append(method.name).append("\n");
+                for(AbstractInsnNode insnNode : method.instructions){
+                    builder.append(InstructionToString.instructionToString(insnNode, method, targetClass)).append("\n");
+                }
+                if(method.name.equals("getTurretX")){
+//                    builder.append(InstructionToString)
+                }
+            }
+
+            writeDumpFile(targetClassName, builder.toString());
+
+
+        }
+
 
         if(targetClassName.substring(targetClassName.lastIndexOf('.') + 1).equals("ChainDriveBlock2")){
 //            System.out.println("Found interfaces on ChainDriveBlock2:");
@@ -178,7 +267,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
             System.out.println("Found PotatoTurretBlockEntity");
             System.out.println(Arrays.toString(targetClass.interfaces.toArray()));
 
-            targetClass.interfaces.clear();
+            InstructionFixers.applyStaticInterfaceMoves(targetClass);
 
 
             for(FieldNode field : targetClass.fields){
@@ -394,6 +483,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
 //            dumpClass(targetClassName, targetClass, false);
 
+            executeAllNormalInstructionFixers(targetClass);
+
         }
         //end DDBlocks check
 
@@ -405,6 +496,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
             for(MethodNode method : targetClass.methods){
 //                classInstructions.append("method: ").append(method.name).append(", desc: ").append(method.desc).append(", sig: ").append(method.signature).append('\n');
+
+                InstructionFixers.applyStaticMethodClassMoves(method, targetClass);
                 for(AbstractInsnNode insn : method.instructions){
 
                     InstructionFixers.fixIPlacementHelperInsn(insn, method);
@@ -421,6 +514,12 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
         }
 
+        if(targetClassJavaName.equals("BronzeSawBlock$PlacementHelper")){
+            InstructionFixers.applyStaticInterfaceMoves(targetClass);
+//            System.out.println(targetClass.interfaces.get(0));
+
+        }
+
         if(targetClassName.contains("BronzeDrillBlock") ||
                 targetClassName.contains("RadiantDrillBlock") ||
                 targetClassName.contains("ShadowDrillBlock")){
@@ -429,8 +528,12 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
             StringBuilder classString = new StringBuilder();
 
+            InstructionFixers.applyStaticInterfaceMoves(targetClass);
+
 
             for(MethodNode method : targetClass.methods){
+
+                InstructionFixers.applyStaticMethodClassMoves(method, targetClass);
 
                  for(AbstractInsnNode insn : method.instructions){
 
@@ -442,9 +545,14 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
             }
 
-            writeDumpFile(targetClassName, classString.toString());
+
+            executeAllNormalInstructionFixers(targetClass);
+
+//            writeDumpFile(targetClassName, classString.toString());
 
 //            dumpClass(targetClassName, targetClass, false);
+
+
         }
         //end bronze saw block checks
 
@@ -462,7 +570,11 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 //            writeDumpFile(targetClassName, classString.toString());
 //        }
 
-        if(targetClassName.contains("BronzeDrillMovementBehaviour")){
+        if(
+                targetClassName.contains("BronzeDrillMovementBehaviour") ||
+                targetClassName.contains("ShadowDrillMovementBehaviour") ||
+                targetClassName.contains("RadiantDrillMovementBehaviour")   ){
+
 
 //            StringBuilder classString = new StringBuilder();
             for(MethodNode method : targetClass.methods){
@@ -475,15 +587,25 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 //                        .append(" desc: ").append(method.desc)
 //                        .append("\n");
 
-                for(AbstractInsnNode insn : method.instructions){
-//                    classString.append(InstructionToString.instructionToString(insn, method, targetClass)).append('\n');
+//                for(AbstractInsnNode insn : method.instructions){
+////                    classString.append(InstructionToString.instructionToString(insn, method, targetClass)).append('\n');
+//
+//                    InstructionFixers.applyStaticInsnClassMoves(insn, method);
+//                }
 
-                    InstructionFixers.applyStaticInsnClassMoves(insn, method);
-                }
             }
 
-//            writeDumpFile(targetClassName, classString.toString());
+            dumpClass(targetClassName, targetClass, false);
 
+
+//            writeDumpFile(targetClassName, classString.toString());
+            executeAllNormalInstructionFixers(targetClass);
+
+
+        }
+
+        if(targetClassJavaName.contains("BronzeSawMovementBehaviour")){
+            executeAllNormalInstructionFixers(targetClass);
         }
 
 
@@ -494,6 +616,20 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                     InstructionFixers.applyStaticInsnClassMoves(insn, method)   ;
                 }
             }
+
+            executeAllNormalInstructionFixers(targetClass);
+
+        }
+
+        if(targetClassJavaName.equals("YIPPEESlidingDoorRenderer")){
+
+            InstructionFixers.ONE_TO_ONE_CLASS_MOVES.put(ClassConstants.WRONG_DD_PARTIAL_BLOCK_MODELS, ClassConstants.RIGHT_PARTIAL_BLOCK_MODELS);
+
+            executeAllNormalInstructionFixers(targetClass);
+
+            InstructionFixers.ONE_TO_ONE_CLASS_MOVES.remove(ClassConstants.WRONG_DD_PARTIAL_BLOCK_MODELS);
+
+            dumpClass(targetClassName, targetClass, false);
         }
 
 
@@ -501,6 +637,23 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
     }
 
+    private static void executeAllNormalInstructionFixers(ClassNode targetClass) {
+        InstructionFixers.applyStaticInterfaceMoves(targetClass);
+
+
+        for(FieldNode f : targetClass.fields) {
+            InstructionFixers.applyFieldClassMoves(f, targetClass);
+            InstructionFixers.applyStaticFieldClassMoves(f, targetClass);
+        }
+
+        for(MethodNode m : targetClass.methods){
+            InstructionFixers.applyStaticMethodClassMoves(m, targetClass);
+
+            for(AbstractInsnNode insn : m.instructions){
+                InstructionFixers.applyStaticInsnClassMoves(insn, m);
+            }
+        }
+    }
 
 
     private static void dumpClass(String targetClassName, ClassNode targetClass, boolean before) {

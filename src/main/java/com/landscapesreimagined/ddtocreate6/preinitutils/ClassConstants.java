@@ -61,9 +61,32 @@ public class ClassConstants {
     public static final String WRONG_TRANSFORM_STACK = "com/jozufozu/flywheel/util/transform/TransformStack";
     public static final String TRANSFORM_STACK = "dev/engine_room/flywheel/lib/transform/TransformStack";
 
+    //WrappedWorld
+    public static final String WRONG_WRAPPED_WORLD = "com/simibubi/create/foundation/utility/worldWrappers/WrappedWorld";
+    public static final String WRAPPED_BLOCK_AND_TINT_GETTER = "com/simibubi/create/foundation/utility/worldWrappers/WrappedBlockAndTintGetter";
+
+    //TooltipHelper
+    public static final String WRONG_TOOLIP_HELPER = "com/simibubi/create/foundation/item/TooltipHelper";
+    public static final String FONT_HELPER = "net/createmod/catnip/lang/FontHelper";
+
+    //hehe
+    public static final String WRONG_DD_PARTIAL_BLOCK_MODELS = "uwu/lopyluna/create_dd/block/BlockResources/DDBlockPartialModel";
+    public static final String RIGHT_PARTIAL_BLOCK_MODELS = "com/landscapesreimagined/ddtocreate6/replaced/ReplacedDDBlockPartialModel";
+
+    //PonderTag
+    public static final String WRONG_PONDER_TAG = "com/simibubi/create/foundation/ponder/PonderTag";
+    public static final String PONDER_TAG = "net/createmod/ponder/foundation/PonderTag";
+
+    //VoxelShaper
+    public static final String WRONG_VOXEL_SHAPER = "com/simibubi/create/foundation/utility/VoxelShaper";
+    public static final String VOXEL_SHAPER = "net/createmod/catnip/math/VoxelShaper";
+
+    //PonderRegistry
+
+
     //relics of the Old Way
-    public static final String wrongPlacementOffset = "Lcom/simibubi/create/foundation/placement/PlacementOffset";
-    public static final String placementOffset = "Lnet/createmod/catnip/placement/PlacementOffset";
+    public static final String wrongPlacementOffset = "com/simibubi/create/foundation/placement/PlacementOffset";
+    public static final String placementOffset = "net/createmod/catnip/placement/PlacementOffset";
     public static final String wrongPlacementHelper = "com/simibubi/create/foundation/placement/IPlacementHelper";
     public static final String placementHelper = "net/createmod/catnip/placement/IPlacementHelper";
 

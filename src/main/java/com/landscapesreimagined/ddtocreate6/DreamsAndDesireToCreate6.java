@@ -1,6 +1,8 @@
 package com.landscapesreimagined.ddtocreate6;
 
+import com.landscapesreimagined.ddtocreate6.client.DreamsAndDesireToCreate6Client;
 import com.mojang.logging.LogUtils;
+import com.simibubi.create.CreateClient;
 import com.tterrag.registrate.util.DebugMarkers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
@@ -19,6 +21,7 @@ import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -65,6 +68,8 @@ public class DreamsAndDesireToCreate6 {
 
     public DreamsAndDesireToCreate6() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
+
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
@@ -81,6 +86,9 @@ public class DreamsAndDesireToCreate6 {
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
+
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> DreamsAndDesireToCreate6Client.onCtorClient(modEventBus, forgeEventBus));
+
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);

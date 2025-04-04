@@ -22,6 +22,11 @@ public class DDInitMixin {
         ReplacedDDBlockPartialModel.init();
     }
 
+//    @WrapOperation(
+//             method = "<clinit>",
+//            at = @At(value = "INVOKE", target = "t")
+//    )
+
 
 
 //    @WrapOperation(method = "<init>", at = @At(value = "INVOKE", target = "Luwu/lopyluna/create_dd/block/DDBlockEntityTypes;register()V"), remap = false)
