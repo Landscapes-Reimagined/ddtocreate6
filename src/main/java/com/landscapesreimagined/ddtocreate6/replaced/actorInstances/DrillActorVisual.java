@@ -16,6 +16,7 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class DrillActorVisual extends ActorVisual {
+
     TransformedInstance drillHead;
     protected final Direction facing;
 

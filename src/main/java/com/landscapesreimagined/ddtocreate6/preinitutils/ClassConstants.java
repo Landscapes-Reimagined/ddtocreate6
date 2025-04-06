@@ -69,6 +69,10 @@ public class ClassConstants {
     public static final String WRONG_TOOLIP_HELPER = "com/simibubi/create/foundation/item/TooltipHelper";
     public static final String FONT_HELPER = "net/createmod/catnip/lang/FontHelper";
 
+    //Iterate
+    public static final String WRONG_ITERATE = "com/simibubi/create/foundation/utility/Iterate",
+                                ITERATE = "net/createmod/catnip/data/Iterate";
+
     //hehe
     public static final String WRONG_DD_PARTIAL_BLOCK_MODELS = "uwu/lopyluna/create_dd/block/BlockResources/DDBlockPartialModel";
     public static final String RIGHT_PARTIAL_BLOCK_MODELS = "com/landscapesreimagined/ddtocreate6/replaced/ReplacedDDBlockPartialModel";
@@ -81,8 +85,9 @@ public class ClassConstants {
     public static final String WRONG_VOXEL_SHAPER = "com/simibubi/create/foundation/utility/VoxelShaper";
     public static final String VOXEL_SHAPER = "net/createmod/catnip/math/VoxelShaper";
 
-    //PonderRegistry
-
+    //Color
+    public static final String WRONG_COLOR = "com/simibubi/create/foundation/utility/Color";
+    public static final String COLOR = "net/createmod/catnip/theme/Color";
 
     //relics of the Old Way
     public static final String wrongPlacementOffset = "com/simibubi/create/foundation/placement/PlacementOffset";

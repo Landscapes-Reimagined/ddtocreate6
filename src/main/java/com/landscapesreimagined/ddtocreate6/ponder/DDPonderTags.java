@@ -85,19 +85,15 @@ public class DDPonderTags {
                 .add(DDFluids.SHIMMER.get().getBucket())
                 .add(DDFluids.VANILLA_MILKSHAKE.get().getBucket())
                 .add(DDFluids.VANILLA.get().getBucket())
-                .add(DDFluids.CARAMEL.get().getBucket());
-
-        itemHelper.addToTag(STONE_GENERATION)
+                .add(DDFluids.CARAMEL.get().getBucket())
                 .add(DDFluids.CARAMEL_MILKSHAKE.get().getBucket())
                 .add(DDFluids.CHOCOLATE_MILKSHAKE.get().getBucket())
                 .add(DDFluids.HOT_CHOCOLATE.get().getBucket())
                 .add(DDFluids.GLOWBERRY.get().getBucket())
-                .add(DDFluids.GLOWBERRY_MILKSHAKE.get().getBucket());
-        itemHelper.addToTag(STONE_GENERATION)
+                .add(DDFluids.GLOWBERRY_MILKSHAKE.get().getBucket())
                 .add(DDFluids.STRAWBERRY.get().getBucket())
                 .add(DDFluids.STRAWBERRY_MILKSHAKE.get().getBucket())
-                .add(DDFluids.CREAM.get().getBucket());
-        itemHelper.addToTag(STONE_GENERATION)
+                .add(DDFluids.CREAM.get().getBucket())
                 .add(DDFluids.CONDENSE_MILK.get().getBucket());
         //todo: fix ponder_stone_generation
 //        itemHelper.addToTag(STONE_GENERATION)

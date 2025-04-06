@@ -44,7 +44,9 @@ public class InstructionFixers {
 
             //these can be whatever, we don't need to change them
 //            String name = lvn.name;
-//            String sig = lvn.signature;
+            //may be causing an error finally
+            String sig = lvn.signature;
+
 
             //iterate over all of the old classes,
             // replacing every found instance in the
@@ -57,9 +59,18 @@ public class InstructionFixers {
                     desc = desc.replace(oldClass, newClass);
                 }
 
+
+
+
+
+            }
+
+            if(sig != null){
+                sig = replaceAllOldClasses(sig);
             }
 
             lvn.desc = desc;
+            lvn.signature = sig;
 
             method.localVariables.set(vinsn.var, lvn);
 
@@ -141,10 +152,17 @@ public class InstructionFixers {
 
                     //todo: bridges to cross when we get there: owner, name
                     String handleDesc = h.getDesc();
+                    String owner = h.getOwner();
 
-                    handleDesc = replaceAllOldClasses(handleDesc);
+                    String[] replaced = replaceAllOldClasses(owner, handleDesc);
 
-                    o = new Handle(h.getTag(), h.getOwner(), h.getName(), handleDesc, h.isInterface());
+
+//                    System.out.println(h.getOwner());
+//                    if(method.name.equals("forDirectional"))
+//                        System.out.println("    LOOK AT ME HEHEHEHE     " + h.getOwner());
+
+
+                    o = new Handle(h.getTag(), replaced[0], h.getName(), replaced[1], h.isInterface());
 
 
                 }
@@ -200,6 +218,26 @@ public class InstructionFixers {
     }
 
     /**
+     * Replaces all old classes found in the desc string with their update 6 counterparts
+     * @param descs Type descriptions to replace in
+     * @return The updated and hopefully correct desc string
+     */
+    public static String[] replaceAllOldClasses(String... descs) {
+
+
+        for(final String oldClass : ONE_TO_ONE_CLASS_MOVES.keySet()){
+
+            final String newClass = ONE_TO_ONE_CLASS_MOVES.get(oldClass);
+
+            for (int i = 0; i < descs.length; i++) {
+                descs[i] = descs[i].replaceAll(oldClass, newClass);
+            }
+        }
+
+        return descs;
+    }
+
+    /**
      * Shorthand for the method transformation that executes
      * all the one-to-one class movement transformations added to
      * the {@link InstructionFixers#ONE_TO_ONE_CLASS_MOVES} HashMap.<br><br>
@@ -218,6 +256,32 @@ public class InstructionFixers {
 
         for(final String oldClass : ONE_TO_ONE_CLASS_MOVES.keySet()){
             method.desc = method.desc.replaceAll(oldClass, ONE_TO_ONE_CLASS_MOVES.get(oldClass));
+            if(method.signature != null)
+                method.signature = method.signature.replaceAll(oldClass, ONE_TO_ONE_CLASS_MOVES.get(oldClass));
+        }
+
+
+        for (int i = 0; ( method.localVariables != null ) && ( i < method.localVariables.size() ); i++) {
+            LocalVariableNode lvn = method.localVariables.get(i);
+            String desc = lvn.desc;
+
+            //these can be whatever, we don't need to change them
+//            String name = lvn.name;
+            //may be causing an error finally
+            String sig = lvn.signature;
+
+            if(sig != null) {
+                String[] h = replaceAllOldClasses(desc, sig);
+
+                lvn.signature = h[1];
+                lvn.desc = h[0];
+            }else{
+                lvn.desc = replaceAllOldClasses(desc);
+            }
+
+
+            method.localVariables.set(i, lvn);
+
         }
 
         targetClass.methods.set(index, method);
@@ -408,6 +472,7 @@ public class InstructionFixers {
         ONE_TO_ONE_CLASS_MOVES.put(WRONG_TOOLIP_HELPER, FONT_HELPER);
 //        ONE_TO_ONE_CLASS_MOVES.put(WRONG_DD_PARTIAL_BLOCK_MODELS, RIGHT_PARTIAL_BLOCK_MODELS);
         ONE_TO_ONE_CLASS_MOVES.put(WRONG_VOXEL_SHAPER, VOXEL_SHAPER);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_COLOR, COLOR);
 
 
     }

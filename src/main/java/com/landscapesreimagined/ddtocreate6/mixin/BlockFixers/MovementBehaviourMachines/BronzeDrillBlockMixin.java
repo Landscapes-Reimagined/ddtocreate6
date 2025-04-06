@@ -27,22 +27,22 @@ import java.util.function.Predicate;
 @Mixin(BronzeDrillBlock.class)
 public class BronzeDrillBlockMixin {
 
-    private static int placemntHelperId = PlacementHelpers.register(new IPlacementHelper() {
-        @Override
-        public Predicate<ItemStack> getItemPredicate() {
-            return null;
-        }
-
-        @Override
-        public Predicate<BlockState> getStatePredicate() {
-            return null;
-        }
-
-        @Override
-        public PlacementOffset getOffset(Player player, Level level, BlockState blockState, BlockPos blockPos, BlockHitResult blockHitResult) {
-            return null;
-        }
-    });
+//    private static int placemntHelperId = PlacementHelpers.register(new IPlacementHelper() {
+//        @Override
+//        public Predicate<ItemStack> getItemPredicate() {
+//            return null;
+//        }
+//
+//        @Override
+//        public Predicate<BlockState> getStatePredicate() {
+//            return null;
+//        }
+//
+//        @Override
+//        public PlacementOffset getOffset(Player player, Level level, BlockState blockState, BlockPos blockPos, BlockHitResult blockHitResult) {
+//            return null;
+//        }
+//    });
 
 //    /**
 //     * @author gamma_02

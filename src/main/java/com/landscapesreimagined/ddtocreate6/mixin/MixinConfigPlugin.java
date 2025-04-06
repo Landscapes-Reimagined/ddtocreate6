@@ -4,6 +4,7 @@ import com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants;
 import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionFixers;
 import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionToString;
 import com.landscapesreimagined.ddtocreate6.preinitutils.LookAroundMatchers;
+import org.joml.Quaternionfc;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
@@ -15,6 +16,9 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.util.*;
+
+import static com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants.ITERATE;
+import static com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants.WRONG_ITERATE;
 
 public class MixinConfigPlugin implements IMixinConfigPlugin {
     @Override
@@ -71,8 +75,17 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
             executeAllNormalInstructionFixers(targetClass);
         }
 
-        if(mixinJavaName.equals("GeneralFixerMultiTargetMixin")){
+        if(targetClassJavaName.equals("CogCrankBlockEntity")){
             executeAllNormalInstructionFixers(targetClass);
+        }
+
+        if(targetClassJavaName.equals("IndustrialAirCurrent")){
+            executeAllNormalInstructionFixers(targetClass);
+        }
+
+        if(mixinJavaName.equals("DDBlockShapesFixerTester")){
+            executeAllNormalInstructionFixers(targetClass);
+
         }
 
         if(targetClassJavaName.equals("EightBladeFanBlockEntity")){
@@ -98,6 +111,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                     int deleteCounter = 0;
                     ArrayDeque<AbstractInsnNode> toRemove = new ArrayDeque<>();
                     for(AbstractInsnNode insnNode : method.instructions){
+
                         if(insnNode.getOpcode() == Opcodes.NEW && ((TypeInsnNode) insnNode).desc.contains("PartialModel")){
                             deleteCounter = 2;
                         }else if(insnNode.getOpcode() == Opcodes.INVOKESPECIAL && ((MethodInsnNode) insnNode).owner.contains("PartialModel")){
@@ -112,15 +126,21 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                             method.instructions.insertBefore(insnNode, invokeStaticPartialModelOf);
                         }
 
+
+
+
                         if(deleteCounter > 0){
                             toRemove.push(insnNode);
                             --deleteCounter;
                         }
                     }
                     InstructionFixers.removeAllInstructions(targetClass, method, toRemove);
-                }
+                }//end clinit
+
             }
         }
+
+
 
 //        if(targetClassJavaName.contains("Fur"))
 
@@ -177,7 +197,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
         }
 
         //todo: test and finish!!
-        if(targetClassJavaName.equals("Redirects")){
+        if(targetClassJavaName.contains("Redirects")){
 
 //            dumpClass(targetClassName, targetClass, true);
 
@@ -624,13 +644,36 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
         if(targetClassJavaName.equals("YIPPEESlidingDoorRenderer")){
 
             InstructionFixers.ONE_TO_ONE_CLASS_MOVES.put(ClassConstants.WRONG_DD_PARTIAL_BLOCK_MODELS, ClassConstants.RIGHT_PARTIAL_BLOCK_MODELS);
+            InstructionFixers.ONE_TO_ONE_CLASS_MOVES.put(ClassConstants.WRONG_ITERATE, ClassConstants.ITERATE);
+
 
             executeAllNormalInstructionFixers(targetClass);
 
             InstructionFixers.ONE_TO_ONE_CLASS_MOVES.remove(ClassConstants.WRONG_DD_PARTIAL_BLOCK_MODELS);
+            InstructionFixers.ONE_TO_ONE_CLASS_MOVES.remove(ClassConstants.WRONG_ITERATE);
 
             dumpClass(targetClassName, targetClass, false);
         }
+
+        if(targetClassJavaName.equals("YIPPEESlidingDoorBlockEntity")){
+            executeAllNormalInstructionFixers(targetClass);
+        }
+
+
+
+        //general fixers need to go all the way down here to make sure
+        //that specific fixers won't trip up over migrated types
+        //(starting now)
+        if(mixinJavaName.equals("GeneralFixerMultiTargetMixin")){
+            executeAllNormalInstructionFixers(targetClass);
+        }
+
+        if(mixinJavaName.equals("SequencedCraftingFixers")){
+            executeAllNormalInstructionFixers(targetClass);
+        }
+
+
+
 
 
 
