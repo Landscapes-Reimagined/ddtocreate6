@@ -2,6 +2,7 @@ package com.landscapesreimagined.ddtocreate6.mixin.BlockFixers.rendererFixers;
 
 import org.spongepowered.asm.mixin.Mixin;
 import uwu.lopyluna.create_dd.block.BlockProperties.accelerator_motor.AcceleratorMotorRenderer;
+import uwu.lopyluna.create_dd.block.BlockProperties.cog_crank.CogCrankRenderer;
 import uwu.lopyluna.create_dd.block.BlockProperties.door.YIPPEESlidingDoorRenderer;
 import uwu.lopyluna.create_dd.block.BlockProperties.drill.bronze.BronzeDrillRenderer;
 import uwu.lopyluna.create_dd.block.BlockProperties.drill.radiant.RadiantDrillRenderer;
@@ -31,6 +32,7 @@ import uwu.lopyluna.create_dd.item.ItemProperties.sawtool.ForestRavagerRender;
         IndustrialFanRenderer.class,
         KineticMotorRenderer.class,
         PotatoTurretRenderer.class,
+        CogCrankRenderer.class,
     }
 )
 public class RendererFixer {

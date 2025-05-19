@@ -1,4 +1,20 @@
 {
-  "mappings": {},
-  "data": {}
+  "mappings": {
+    "com/landscapesreimagined/ddtocreate6/mixin/BlockFixers/SecondaryChainDriveBlockMixin": {
+      "getStateForPlacement": "Luwu/lopyluna/create_dd/block/BlockProperties/secondary_encased_chain_drive/ChainDriveBlock2;m_5573_(Lnet/minecraft/world/item/context/BlockPlaceContext;)Lnet/minecraft/world/level/block/state/BlockState;"
+    },
+    "com/landscapesreimagined/ddtocreate6/mixin/BlockFixers/FlywheelConnectionBlockMixin": {
+      "getSerializedName": "Luwu/lopyluna/create_dd/block/BlockProperties/flywheel/FlywheelBlock$ConnectionState;m_7912_()Ljava/lang/String;"
+    }
+  },
+  "data": {
+    "searge": {
+      "com/landscapesreimagined/ddtocreate6/mixin/BlockFixers/SecondaryChainDriveBlockMixin": {
+        "getStateForPlacement": "Luwu/lopyluna/create_dd/block/BlockProperties/secondary_encased_chain_drive/ChainDriveBlock2;m_5573_(Lnet/minecraft/world/item/context/BlockPlaceContext;)Lnet/minecraft/world/level/block/state/BlockState;"
+      },
+      "com/landscapesreimagined/ddtocreate6/mixin/BlockFixers/FlywheelConnectionBlockMixin": {
+        "getSerializedName": "Luwu/lopyluna/create_dd/block/BlockProperties/flywheel/FlywheelBlock$ConnectionState;m_7912_()Ljava/lang/String;"
+      }
+    }
+  }
 }

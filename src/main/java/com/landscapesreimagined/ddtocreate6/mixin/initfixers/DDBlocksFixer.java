@@ -9,6 +9,9 @@ import com.tterrag.registrate.builders.Builder;
 import com.tterrag.registrate.util.nullness.NonNullConsumer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import uwu.lopyluna.create_dd.DDCreate;
 import uwu.lopyluna.create_dd.block.DDBlocks;
 
 @Mixin(DDBlocks.class)
@@ -31,6 +34,8 @@ public class DDBlocksFixer {
     private static Builder onRegister(BlockBuilder instance, NonNullConsumer nonNullConsumer, Operation<Builder> original){
         return instance;
     }
+
+
 
 
 

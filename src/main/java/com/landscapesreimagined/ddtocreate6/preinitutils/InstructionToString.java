@@ -240,6 +240,7 @@ public class InstructionToString {
                     case Opcodes.F_APPEND:
                         insns.append("append [");
 //                        appendFrameTypes(numLocal, local);
+                        appendFrameLocals(insns, frameNode);
                         insns.append(']');
                         break;
                     case Opcodes.F_CHOP:
@@ -269,5 +270,21 @@ public class InstructionToString {
 
 
         return insns.toString();
+    }
+
+    private static void appendFrameLocals(StringBuilder insns, FrameNode frameNode) {
+        boolean first = true;
+        for(Object o : frameNode.local){
+            if(first){
+                insns.append("{");
+                first = false;
+            }else{
+                insns.append(", {");
+            }
+
+            insns.append(o).append("}");
+        }
+
+
     }
 }

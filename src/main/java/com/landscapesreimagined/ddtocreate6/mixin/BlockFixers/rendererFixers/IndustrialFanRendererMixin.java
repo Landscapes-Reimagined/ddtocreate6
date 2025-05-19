@@ -21,4 +21,5 @@ public class IndustrialFanRendererMixin {
         return VisualizationManager.supportsVisualization(level);
     }
 
+
 }

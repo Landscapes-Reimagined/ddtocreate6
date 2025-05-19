@@ -17,4 +17,9 @@ public class SecondaryChainDriveBlockMixin {
         return Iterate.directions;
     }
 
+    @WrapOperation(method = "getStateForPlacement", at = @At(value = "FIELD", target = "Lcom/simibubi/create/foundation/utility/Iterate;directions:[Lnet/minecraft/core/Direction;"))
+    private Direction[] replaceInIterate(Operation<Direction[]> original){
+        return Iterate.directions;
+    }
+
 }

@@ -25,6 +25,7 @@ public class ReplacedDDBlockPartialModel {
     public static final PartialModel POTATO_TURRET_CONNECTOR = block("potato_turret/connector");
     public static final PartialModel POTATO_TURRET_SINGLE_BARREL = block("potato_turret/single_barrel");
     public static final PartialModel HAND_CRANK_HANDLE = block("cog_crank/handle");
+    public static final PartialModel COG_CRANK_GEAR = block("cog_crank/block");
     public static final PartialModel FURNACE_GENERATOR_FRAME = block("furnace_engine/frame");
     public static final PartialModel FLYWHEEL = block("flywheel/wheel");
     public static final PartialModel FLYWHEEL_UPPER_ROTATING = block("flywheel/upper_rotating_connector");

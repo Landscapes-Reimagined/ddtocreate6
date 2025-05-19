@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import uwu.lopyluna.create_dd.block.BlockProperties.flywheel.FlywheelBlock;
 import uwu.lopyluna.create_dd.block.BlockProperties.flywheel.engine.EngineBlock;
 import uwu.lopyluna.create_dd.block.BlockProperties.flywheel.engine.FurnaceEngineBlockEntity;
 
@@ -33,19 +34,19 @@ public class FurnaceEngineVisual extends AbstractBlockEntityVisual<FurnaceEngine
 
         PartialModel furnaceEngineModel = ReplacedDDBlockPartialModel.FURNACE_GENERATOR_FRAME;
 
-        Direction facing = blockEntity.getBlockState().getValue(BlockStateProperties.FACING);
+        Direction facing = blockEntity.getBlockState().getValue(FlywheelBlock.HORIZONTAL_FACING);
 
         this.frame = instancerProvider()
                 .instancer(InstanceTypes.TRANSFORMED, Models.partial(furnaceEngineModel))
                 .createInstance();
 
-        float angle = AngleHelper.horizontalAngle(facing);
+//        float angle = AngleHelper.horizontalAngle(facing);
 
 //        Matrix4f transforms = new Matrix4f();
         this.frame.translate(getVisualPosition())
                 .nudge(getVisualPosition().hashCode())
                 .center()
-                .rotate(angle, Direction.UP)
+                .rotateTo(Direction.SOUTH, facing)
                 .uncenter()
                 .translate(0, 0, -1);
 

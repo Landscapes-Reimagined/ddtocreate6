@@ -3,6 +3,7 @@ package com.landscapesreimagined.ddtocreate6.mixin.BlockFixers.blockEntities;
 import com.landscapesreimagined.ddtocreate6.util.mixin.FanAccessor;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import net.createmod.catnip.animation.LerpedFloat;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;

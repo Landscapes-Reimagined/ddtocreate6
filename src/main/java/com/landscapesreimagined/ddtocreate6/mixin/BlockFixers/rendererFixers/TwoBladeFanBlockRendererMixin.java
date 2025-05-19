@@ -41,8 +41,11 @@ public abstract class TwoBladeFanBlockRendererMixin extends KineticBlockEntityRe
             BlockState blockState = be.getBlockState();
             float speed = ((FanAccessor) be).getVisualSpeed().getValue(partialTicks) * 3.0F / 10.0F;
             float angle = ((FanAccessor) be).getAngle() + speed * partialTicks;
-            VertexConsumer vb = buffer.getBuffer(RenderType.solid());
+            VertexConsumer vb = buffer.getBuffer(RenderType.cutoutMipped());
             this.renderFlywheel(be, ms, light, blockState, angle, vb);
+
+            ms.pushPose();
+
         }
     }
 

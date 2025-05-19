@@ -10,14 +10,18 @@ import com.simibubi.create.foundation.data.CreateBlockEntityBuilder;
 import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.builders.BlockEntityBuilder;
 import com.tterrag.registrate.builders.BuilderCallback;
+import com.tterrag.registrate.util.nullness.NonNullFunction;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import dev.engine_room.flywheel.lib.visualization.SimpleBlockEntityVisualizer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
 import net.minecraftforge.common.util.NonNullPredicate;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.Inject;
 import uwu.lopyluna.create_dd.block.BlockProperties.ReversedGearboxBlockEntity;
 import uwu.lopyluna.create_dd.block.BlockProperties.accelerator_motor.AcceleratorMotorBlockEntity;
 import uwu.lopyluna.create_dd.block.BlockProperties.bronze_saw.BronzeSawBlockEntity;
@@ -29,6 +33,7 @@ import uwu.lopyluna.create_dd.block.BlockProperties.fan.EightBladeFanBlockEntity
 import uwu.lopyluna.create_dd.block.BlockProperties.fan.FourBladeFanBlockEntity;
 import uwu.lopyluna.create_dd.block.BlockProperties.fan.TwoBladeFanBlockEntity;
 import uwu.lopyluna.create_dd.block.BlockProperties.flywheel.FlywheelBlockEntity;
+import uwu.lopyluna.create_dd.block.BlockProperties.flywheel.FlywheelRenderer;
 import uwu.lopyluna.create_dd.block.BlockProperties.flywheel.engine.FurnaceEngineBlockEntity;
 import uwu.lopyluna.create_dd.block.BlockProperties.hydraulic_press.HydraulicPressBlockEntity;
 import uwu.lopyluna.create_dd.block.BlockProperties.industrial_fan.IndustrialFanBlockEntity;
@@ -64,8 +69,8 @@ public abstract class AddInstanceToCreateBlockEntityBuilder<T extends BlockEntit
         switch (name) {
             case "furnace_engine" ->
                     ((CreateBlockEntityBuilder<FurnaceEngineBlockEntity, P>) ((BlockEntityBuilder<T, P>) this)).visual(() -> FurnaceEngineVisual::new, renderNormally);
-            case "flywheel" ->
-                    ((CreateBlockEntityBuilder<FlywheelBlockEntity, P>) ((BlockEntityBuilder<T, P>) this)).visual(() -> FlywheelVisual::new, renderNormally);
+//            case "flywheel" ->
+//                    ((CreateBlockEntityBuilder<FlywheelBlockEntity, P>) ((BlockEntityBuilder<T, P>) this)).visual(() -> FlywheelVisual::new, renderNormally);
             case "bronze_saw" ->
                     ((CreateBlockEntityBuilder<BronzeSawBlockEntity, P>) ((BlockEntityBuilder<T, P>) this)).visual(() -> BronzeSawVisual::new, renderNormally);
             case "bronze_drill" ->
@@ -108,5 +113,14 @@ public abstract class AddInstanceToCreateBlockEntityBuilder<T extends BlockEntit
     public CreateBlockEntityBuilder<T, P> instance(
             NonNullSupplier<BiFunction<?, T, ?>> instanceFactory) {
         return this.instance(instanceFactory, true);
+    }
+
+    @Override
+    public BlockEntityBuilder<T, P> renderer(NonNullSupplier<NonNullFunction<BlockEntityRendererProvider.Context, BlockEntityRenderer<? super T>>> renderer) {
+        if(this.getName().equals("flywheel")){
+            return (super.renderer(() -> (FlywheelRenderer::new)));
+        }
+        System.out.println("registering renderer: " + this.getName());
+        return super.renderer(renderer);
     }
 }

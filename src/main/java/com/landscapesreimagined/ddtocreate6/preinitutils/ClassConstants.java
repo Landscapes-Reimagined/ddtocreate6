@@ -89,6 +89,12 @@ public class ClassConstants {
     public static final String WRONG_COLOR = "com/simibubi/create/foundation/utility/Color";
     public static final String COLOR = "net/createmod/catnip/theme/Color";
 
+    public static final String WRONG_TREE_CUTTER = "com/simibubi/create/foundation/utility/TreeCutter";
+    public static final String TREE_CUTTER = "com/simibubi/create/content/kinetics/saw/TreeCutter";
+
+    public static final String WRONG_FLYWHEEL_RENDERER = "uwu/lopyluna/create_dd.block/BlockProperties/flywheel/FlywheelRenderer";
+    public static final String FLYWHEEL_RENDERER = "com/landscapesreimagined/ddtocreate6/replaced/BlockEntityRenderers/FlywheelRenderer";
+
     //relics of the Old Way
     public static final String wrongPlacementOffset = "com/simibubi/create/foundation/placement/PlacementOffset";
     public static final String placementOffset = "net/createmod/catnip/placement/PlacementOffset";

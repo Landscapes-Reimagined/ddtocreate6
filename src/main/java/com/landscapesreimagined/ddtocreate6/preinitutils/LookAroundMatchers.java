@@ -64,5 +64,6 @@ public class LookAroundMatchers {
         public boolean done(AbstractInsnNode instruction, int position) {
             return position >= length;
         }
+
     }
 }

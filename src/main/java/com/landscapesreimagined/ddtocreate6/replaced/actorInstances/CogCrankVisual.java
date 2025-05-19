@@ -1,5 +1,6 @@
 package com.landscapesreimagined.ddtocreate6.replaced.actorInstances;
 
+import com.landscapesreimagined.ddtocreate6.replaced.ReplacedDDBlockPartialModel;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityVisual;
 import com.simibubi.create.content.kinetics.base.RotatingInstance;
@@ -26,23 +27,26 @@ public class CogCrankVisual extends KineticBlockEntityVisual<CogCrankBlockEntity
     private final RotatingInstance rotatingModel;
     private final TransformedInstance crank;
 
+    public CogCrankVisual(VisualizationContext modelManager, CogCrankBlockEntity blockEntity, float partialTick) {
+        super(modelManager, blockEntity, partialTick);
 
-
-    public CogCrankVisual(VisualizationContext context, CogCrankBlockEntity blockEntity, float partialTick) {
-        super(context, blockEntity, partialTick);
-
-        crank = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.HAND_CRANK_HANDLE))
+        crank = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(ReplacedDDBlockPartialModel.HAND_CRANK_HANDLE))
                 .createInstance();
 
         rotateCrank(partialTick);
 
-        rotatingModel = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.HAND_CRANK_BASE))
+        rotatingModel = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(ReplacedDDBlockPartialModel.COG_CRANK_GEAR))
                 .createInstance();
 
         rotatingModel.setup(CogCrankVisual.this.blockEntity)
                 .setPosition(getVisualPosition())
                 .rotateToFace(blockState.getValue(BlockStateProperties.FACING))
                 .setChanged();
+    }
+
+    @Override
+    public void beginFrame(DynamicVisual.Context ctx) {
+        rotateCrank(ctx.partialTick());
     }
 
     private void rotateCrank(float pt) {
@@ -59,43 +63,25 @@ public class CogCrankVisual extends KineticBlockEntityVisual<CogCrankBlockEntity
     }
 
     @Override
+    protected void _delete() {
+        crank.delete();
+        rotatingModel.delete();
+    }
+
+    @Override
     public void update(float pt) {
-        if(!this.blockEntity.shouldRenderCog())
-            return;
         rotatingModel.setup(blockEntity)
                 .setChanged();
     }
 
     @Override
     public void updateLight(float partialTick) {
-        if(this.blockEntity.shouldRenderCog())
-            relight(crank, rotatingModel);
-
-        if(this.crank != null){
-            this.relight(this.pos, this.crank);
-        }
-
-
+        relight(crank, rotatingModel);
     }
 
     @Override
     public void collectCrumblingInstances(Consumer<Instance> consumer) {
         consumer.accept(crank);
         consumer.accept(rotatingModel);
-    }
-
-    @Override
-    protected void _delete() {
-        if(this.blockEntity.shouldRenderCog())
-            rotatingModel.delete();
-
-        if(this.crank != null)
-            crank.delete();
-
-    }
-
-    @Override
-    public void beginFrame(DynamicVisual.Context ctx) {
-        rotateCrank(ctx.partialTick());
     }
 }

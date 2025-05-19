@@ -17,6 +17,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class DrillActorVisual extends ActorVisual {
 
+    public static final Direction DRILL_MODEL_FROM_DIR = Direction.NORTH;
+
     TransformedInstance drillHead;
     protected final Direction facing;
 

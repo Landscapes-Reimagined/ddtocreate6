@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-
+//oh my god why won't this work in prod. i just cant.
 @Mixin(AbstractRegistrate.class)
 public class REGISTRATE_SHUT_UPMixin {
 

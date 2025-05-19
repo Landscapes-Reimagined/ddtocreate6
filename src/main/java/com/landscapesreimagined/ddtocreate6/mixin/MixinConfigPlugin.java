@@ -4,10 +4,15 @@ import com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants;
 import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionFixers;
 import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionToString;
 import com.landscapesreimagined.ddtocreate6.preinitutils.LookAroundMatchers;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import org.checkerframework.checker.units.qual.A;
 import org.joml.Quaternionfc;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
@@ -16,20 +21,35 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.function.Function;
 
 import static com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants.ITERATE;
 import static com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants.WRONG_ITERATE;
 
 public class MixinConfigPlugin implements IMixinConfigPlugin {
+
+
+    public static final boolean debug = true;
+
+    public static final Object2IntMap<String> aaa = new Object2IntArrayMap<>();
+    private static final Logger log = LoggerFactory.getLogger(MixinConfigPlugin.class);
+
+
     @Override
     public void onLoad(String mixinPackage) {
-        System.out.println("I WAS LOADED!!!");
+        if(debug)
+            System.out.println("I WAS LOADED!!!");
 
         try {
             //load classes for use in preinit stuff
             this.getClass().getClassLoader().loadClass("com.landscapesreimagined.ddtocreate6.preinitutils.InstructionToString");
-            this.getClass().getClassLoader().loadClass("com.landscapesreimagined.ddtocreate6.preinitutils.InstructionFixers");
             this.getClass().getClassLoader().loadClass("com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants");
+            this.getClass().getClassLoader().loadClass("com.landscapesreimagined.ddtocreate6.preinitutils.InstructionFixers");
+
+            this.getClass().getClassLoader().loadClass("com.landscapesreimagined.ddtocreate6.preinitutils.MethodReplacers");
+            this.getClass().getClassLoader().loadClass("com.landscapesreimagined.ddtocreate6.preinitutils.LookAroundMatchers");
+
+
 
         } catch (ClassNotFoundException e) {
             System.out.println("aw man :(");
@@ -67,12 +87,20 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
         final String mixinJavaName = mixinClassName.substring(mixinClassName.lastIndexOf('.') + 1);
 
+        if(aaa.containsKey(targetClassName)){
+            aaa.computeInt(targetClassName, (s, i) -> i + 1);
+        }else{
+            aaa.put(targetClassName, 0);
+        }
+
         if(targetClassJavaName.equals("DDCreate")){
             executeAllNormalInstructionFixers(targetClass);
         }
 
         if(mixinJavaName.equals("RendererFixer")){
+            InstructionFixers.ONE_TO_ONE_CLASS_MOVES.put(ClassConstants.WRONG_DD_PARTIAL_BLOCK_MODELS, ClassConstants.RIGHT_PARTIAL_BLOCK_MODELS);
             executeAllNormalInstructionFixers(targetClass);
+            InstructionFixers.ONE_TO_ONE_CLASS_MOVES.remove(ClassConstants.WRONG_DD_PARTIAL_BLOCK_MODELS);
         }
 
         if(targetClassJavaName.equals("CogCrankBlockEntity")){
@@ -88,10 +116,71 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
         }
 
+        if(targetClassJavaName.equals("DDBlockEntityTypes")) {
+//            executeAllNormalInstructionFixers(targetClass);
+
+            StringBuilder insns = new StringBuilder();
+
+            for(MethodNode m : targetClass.methods){
+                insns.append("method: ").append(m.name).append('\n');
+                for(AbstractInsnNode insn : m.instructions){
+                    insns.append(InstructionToString.instructionToString(insn, m, targetClass)).append('\n');
+                }
+            }
+
+            if(debug)
+                writeDumpFile(targetClassName, insns.toString());
+
+            //Remove DDBlocks#FLYWHEEL static initialization
+            final int toDelete = 29;
+
+            for(MethodNode m : targetClass.methods){
+                int deleted = 0;
+                boolean deleting = false;
+                ArrayDeque<AbstractInsnNode> toRemove = new ArrayDeque<>();
+
+                for(AbstractInsnNode insn : m.instructions){
+
+                    if(!deleting) {
+                        if (insn.getOpcode() != Opcodes.GETSTATIC)
+                            continue;
+                        AbstractInsnNode next = insn.getNext();
+                        if (next.getOpcode() != Opcodes.LDC)
+                            continue;
+
+                        if (!((LdcInsnNode) next).cst.equals("flywheel"))
+                            continue;
+
+                        deleting = true;
+                    }else{
+                        if(deleted >= toDelete) {
+                            deleting = false;
+                            continue;
+                        }
+
+                        toRemove.push(insn);
+                        deleted += 1;
+                    }
+
+
+                }
+
+                InstructionFixers.removeAllInstructions(targetClass, m, toRemove);
+
+            }
+
+            if(debug)
+                dumpClass(targetClassName, targetClass, false);
+
+
+        }
+
         if(targetClassJavaName.equals("EightBladeFanBlockEntity")){
-            dumpClass(targetClassName, targetClass, true);
+            if(debug)
+                dumpClass(targetClassName, targetClass, true);
             executeAllNormalInstructionFixers(targetClass);
-            dumpClass(targetClassName, targetClass, false);
+            if(debug)
+                dumpClass(targetClassName, targetClass, false);
 
         }
 
@@ -99,9 +188,12 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
             executeAllNormalInstructionFixers(targetClass);
         }
 
-        if(targetClassJavaName.contains("DeforesterItem") || targetClassJavaName.equals("ForestRavagerItem")){
+        if(targetClassJavaName.contains("DeforesterItem") || targetClassJavaName.equals("ForestRavagerItem")
+                || targetClassJavaName.equals("TreeCutter") || targetClassJavaName.contains("DeforesterAxeItem")){
             executeAllNormalInstructionFixers(targetClass);
         }
+
+
 
         if(targetClassJavaName.contains("ForestRavagerRender") || targetClassJavaName.contains("DeforesterRender")){
             executeAllNormalInstructionFixers(targetClass);
@@ -170,7 +262,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
             }
 
             if(targetClassJavaName.contains("FanSailBlock")){
-                writeDumpFile(targetClassName, insnDump.toString());
+                if(debug)
+                    writeDumpFile(targetClassName, insnDump.toString());
             }
         }
 
@@ -193,7 +286,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                 }
             }
 
-            dumpClass(targetClassName, targetClass, false);
+            if(debug)
+                dumpClass(targetClassName, targetClass, false);
         }
 
         //todo: test and finish!!
@@ -213,7 +307,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                 }
             }
 
-            writeDumpFile(targetClassName, builder.toString());
+            if(debug)
+                writeDumpFile(targetClassName, builder.toString());
 
 
         }
@@ -284,8 +379,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
         }
 
         if(targetClassJavaName.equals("PotatoTurretBlockEntity")){
-            System.out.println("Found PotatoTurretBlockEntity");
-            System.out.println(Arrays.toString(targetClass.interfaces.toArray()));
+//            System.out.println("Found PotatoTurretBlockEntity");
+//            System.out.println(Arrays.toString(targetClass.interfaces.toArray()));
 
             InstructionFixers.applyStaticInterfaceMoves(targetClass);
 
@@ -499,16 +594,26 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                 }
             }
 
-//            writeDumpFile(targetClassName, insns.toString());
+            if(debug) {
+                writeDumpFile(targetClassName, insns.toString());
 
-//            dumpClass(targetClassName, targetClass, false);
+                dumpClass(targetClassName, targetClass, true);
+            }
 
             executeAllNormalInstructionFixers(targetClass);
+
+
+
 
         }
         //end DDBlocks check
 
 //        System.out.println(targetClassName);
+
+
+        if(targetClassJavaName.equals("BronzeSawBlockEntity")){
+            executeAllNormalInstructionFixers(targetClass);
+        }
 
         if(targetClassName.contains("BronzeSawBlock")){
 //            System.out.println("Targeting bronze saw block: " + targetClassName);
@@ -615,7 +720,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
             }
 
-            dumpClass(targetClassName, targetClass, false);
+            if(debug)
+                dumpClass(targetClassName, targetClass, false);
 
 
 //            writeDumpFile(targetClassName, classString.toString());
@@ -643,20 +749,251 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
         if(targetClassJavaName.equals("YIPPEESlidingDoorRenderer")){
 
+            if(debug)
+                dumpClass(targetClassName + aaa.getInt(targetClass), targetClass, true);
+
+            StringBuilder b = new StringBuilder();
+            InstructionFixers.executeOnEachInsn(targetClass, (insn, m) -> b.append(InstructionToString.instructionToString(insn, m, targetClass)).append('\n'), (m) -> b.append(m.name).append('\n'));
+
+            if(debug)
+                writeDumpFile(targetClassName, b.toString());
+
+
+
             InstructionFixers.ONE_TO_ONE_CLASS_MOVES.put(ClassConstants.WRONG_DD_PARTIAL_BLOCK_MODELS, ClassConstants.RIGHT_PARTIAL_BLOCK_MODELS);
             InstructionFixers.ONE_TO_ONE_CLASS_MOVES.put(ClassConstants.WRONG_ITERATE, ClassConstants.ITERATE);
 
 
-            executeAllNormalInstructionFixers(targetClass);
+            executeAllNormalInstructionFixers(targetClass, (thingy) -> {
+
+                AbstractInsnNode retval = thingy;
+
+                if(thingy.getOpcode() == Opcodes.GETSTATIC && ((FieldInsnNode) thingy).owner.equals("net/minecraft/core/Direction") && ((FieldInsnNode) thingy).name.equals("UP") && ((FieldInsnNode) thingy).desc.equals("Lnet/minecraft/core/Direction;")){
+
+                    return null;
+                }
+
+
+                if(thingy.getType() == AbstractInsnNode.METHOD_INSN && thingy.getOpcode() == Opcodes.INVOKEVIRTUAL){
+                    MethodInsnNode translateInstruction = (MethodInsnNode) thingy;
+//                    System.out.println("FUCKING HELP: net/createmod/catnip/render/SuperByteBuffer | " + translateInstruction.name + " | " + translateInstruction.desc);
+
+
+
+                    if(translateInstruction.owner.equals(ClassConstants.SUPER_BYTE_BUFFER)) {
+                        if (translateInstruction.name.equals("translate") && translateInstruction.desc.contains("Lnet/createmod/catnip/render/SuperByteBuffer")) {
+                            retval = new MethodInsnNode(Opcodes.INVOKEINTERFACE, "net/createmod/catnip/render/SuperByteBuffer", "translate", "(DDD)Ldev/engine_room/flywheel/lib/transform/Translate;");
+                        }else if (translateInstruction.name.equals("translate") && translateInstruction.desc.contains("Ljava/lang/Object")){
+                            retval = new MethodInsnNode(Opcodes.INVOKEINTERFACE, "net/createmod/catnip/render/SuperByteBuffer", "translate", "(Lnet/minecraft/world/phys/Vec3;)Ldev/engine_room/flywheel/lib/transform/Translate;");
+                        }else if (translateInstruction.name.equals("rotateCentered") && translateInstruction.desc.equals("(Lnet/minecraft/core/Direction;F)Lnet/createmod/catnip/render/SuperByteBuffer;")){
+
+                            retval = new MethodInsnNode(Opcodes.INVOKEINTERFACE, translateInstruction.owner,
+                                            translateInstruction.name,
+                                            "(FLnet/minecraft/core/Direction;)Ldev/engine_room/flywheel/lib/transform/Affine;");
+
+                        } else {
+                            retval = new MethodInsnNode(Opcodes.INVOKEINTERFACE, translateInstruction.owner, translateInstruction.name, translateInstruction.desc);
+                        }
+
+                    }
+
+
+                }
+
+
+
+
+                return retval;
+            });
+
+
+            for(MethodNode m : targetClass.methods){
+                ArrayDeque<AbstractInsnNode> toRemove = new ArrayDeque<>();
+                for(AbstractInsnNode insn : m.instructions){
+                    if(insn.getType() == AbstractInsnNode.METHOD_INSN && insn.getOpcode() == Opcodes.INVOKEINTERFACE) {
+                        MethodInsnNode translateInstruction = (MethodInsnNode) insn;
+
+                        if(translateInstruction.name.equals("rotateCentered") && translateInstruction.desc.equals("(FLnet/minecraft/core/Direction;)Ldev/engine_room/flywheel/lib/transform/Affine;")){
+                            m.instructions.insertBefore(translateInstruction, new FieldInsnNode(Opcodes.GETSTATIC, "net/minecraft/core/Direction", "UP", "Lnet/minecraft/core/Direction;"));
+                            continue;
+                        }
+
+//                        if(translateInstruction.name.equals("rotateY") && translateInstruction.desc.equals("(F)Ldev/engine_room/flywheel/lib/transform/Rotate;")){
+//                            if(translateInstruction.getPrevious().getOpcode() == Opcodes.F2D) {
+//                                m.instructions.insertBefore(translateInstruction, new InsnNode(Opcodes.D2F));
+//                                toRemove.push(translateInstruction.getPrevious());
+//                                m.instructions.insert(translateInstruction, new TypeInsnNode(Opcodes.CHECKCAST, "java/lang/Object"));
+//                            }
+//                        }
+                    }
+                }
+                InstructionFixers.removeAllInstructions(targetClass, m, toRemove);
+            }
+
+
 
             InstructionFixers.ONE_TO_ONE_CLASS_MOVES.remove(ClassConstants.WRONG_DD_PARTIAL_BLOCK_MODELS);
             InstructionFixers.ONE_TO_ONE_CLASS_MOVES.remove(ClassConstants.WRONG_ITERATE);
 
-            dumpClass(targetClassName, targetClass, false);
+            if(debug)
+                dumpClass(targetClassName, targetClass, false);
         }
 
         if(targetClassJavaName.equals("YIPPEESlidingDoorBlockEntity")){
             executeAllNormalInstructionFixers(targetClass);
+        }
+
+        if(targetClassJavaName.equals("KineticMotorBlockEntity")){
+            executeAllNormalInstructionFixers(targetClass);
+        }
+
+        if(targetClassJavaName.equals("AcceleratorMotorBlockEntity")){
+            executeAllNormalInstructionFixers(targetClass);
+        }
+
+        if(mixinJavaName.equals("KineticMotorInnerClassMixin")){
+            ArrayDeque<MethodNode> toRemove = new ArrayDeque<>();
+            for(MethodNode m : targetClass.methods){
+                if(m.name.equals("rotate") && m.desc.contains("(Lnet/minecraft/world/level/block/state/BlockState;Lcom/mojang/blaze3d/vertex/PoseStack;)V")){
+                    toRemove.push(m);
+                }else if(m.name.equals("getLocalOffset") && m.desc.contains("(Lnet/minecraft/world/level/block/state/BlockState;)Lnet/minecraft/world/phys/Vec3;")){
+                    toRemove.push(m);
+                }
+            }
+
+            while(!toRemove.isEmpty()){
+                MethodNode m = toRemove.pop();
+
+                targetClass.methods.remove(m);
+            }
+
+            executeAllNormalInstructionFixers(targetClass);
+        }
+
+        if(targetClassJavaName.contains("BladeFanBlockEntity")){
+            LookAroundMatchers.SimpleOpcodeMatcher matcher = new LookAroundMatchers.SimpleOpcodeMatcher(3, Opcodes.ALOAD, Opcodes.INVOKESTATIC, Opcodes.PUTFIELD);
+
+
+            for(MethodNode m : targetClass.methods){
+                ArrayDeque<AbstractInsnNode> toRemove = new ArrayDeque<>();
+                for(AbstractInsnNode insn : m.instructions){
+                    if(
+                        matcher.match(insn, 0) &&
+                        matcher.match(insn.getNext(), 1) &&
+                        matcher.match(insn.getNext().getNext(), 2)
+                        ){
+                        toRemove.push(insn);
+                        toRemove.push(insn.getNext());
+                        toRemove.push(insn.getNext().getNext());
+                    }
+                }
+                InstructionFixers.removeAllInstructions(targetClass, m, toRemove);
+            }
+
+            ArrayDeque<FieldNode> fieldsToRemove = new ArrayDeque<>();
+
+            for(FieldNode field : targetClass.fields){
+                if(field.name.contains("visualSpeed")){
+                    fieldsToRemove.push(field);
+                }
+            }
+
+            while(!fieldsToRemove.isEmpty()){
+                FieldNode pop = fieldsToRemove.pop();
+                targetClass.fields.remove(pop);
+            }
+
+
+        }
+
+        if(targetClassJavaName.equals("HydraulicPressRenderer") || targetClassJavaName.equals("CogCrankRenderer")){
+            dumpClass(targetClassName, targetClass, true);
+            executeAllNormalInstructionFixers(targetClass, (thingy -> {
+                AbstractInsnNode retval = thingy;
+
+                if(thingy.getType() == AbstractInsnNode.METHOD_INSN && thingy.getOpcode() == Opcodes.INVOKEVIRTUAL){
+                    MethodInsnNode translateInstruction = (MethodInsnNode) thingy;
+//                    System.out.println("FUCKING HELP: net/createmod/catnip/render/SuperByteBuffer | " + translateInstruction.name + " | " + translateInstruction.desc);
+                    if(translateInstruction.owner.equals(ClassConstants.SUPER_BYTE_BUFFER)) {
+                        if (translateInstruction.name.equals("translate") && translateInstruction.desc.contains("Lnet/createmod/catnip/render/SuperByteBuffer")) {
+                            retval = new MethodInsnNode(Opcodes.INVOKEINTERFACE, "net/createmod/catnip/render/SuperByteBuffer", "translate", "(DDD)Ldev/engine_room/flywheel/lib/transform/Translate;");
+                        }else if (translateInstruction.name.equals("translate") && translateInstruction.desc.contains("Ljava/lang/Object")){
+                            retval = new MethodInsnNode(Opcodes.INVOKEINTERFACE, "net/createmod/catnip/render/SuperByteBuffer", "translate", "(Lnet/minecraft/world/phys/Vec3;)Ldev/engine_room/flywheel/lib/transform/Translate;");
+                        }else if (translateInstruction.name.equals("rotateCentered") && translateInstruction.desc.equals("(Lnet/minecraft/core/Direction;F)Lnet/createmod/catnip/render/SuperByteBuffer;")){
+
+                            retval = new MethodInsnNode(Opcodes.INVOKEINTERFACE, translateInstruction.owner,
+                                    translateInstruction.name,
+                                    "(FLnet/minecraft/core/Direction;)Ldev/engine_room/flywheel/lib/transform/Affine;");
+
+                        } else {
+                            retval = new MethodInsnNode(Opcodes.INVOKEINTERFACE, translateInstruction.owner, translateInstruction.name, translateInstruction.desc);
+                        }
+
+                    }
+
+
+                }
+
+
+
+                return retval;
+            }));
+
+
+        }
+
+        if(targetClassJavaName.equals("EngineRenderer")){
+            dumpClass(targetClassName, targetClass, true);
+            executeAllNormalInstructionFixers(targetClass, (thingy -> {
+                AbstractInsnNode retval = thingy;
+
+                if(thingy.getOpcode() == Opcodes.GETSTATIC && ((FieldInsnNode) thingy).owner.equals("net/minecraft/core/Direction") && ((FieldInsnNode) thingy).name.equals("UP") && ((FieldInsnNode) thingy).desc.equals("Lnet/minecraft/core/Direction;")){
+                    return null;
+                }
+
+                if(thingy.getType() == AbstractInsnNode.METHOD_INSN && thingy.getOpcode() == Opcodes.INVOKEVIRTUAL){
+                    MethodInsnNode translateInstruction = (MethodInsnNode) thingy;
+//                    System.out.println("FUCKING HELP: net/createmod/catnip/render/SuperByteBuffer | " + translateInstruction.name + " | " + translateInstruction.desc);
+                    if(translateInstruction.owner.equals(ClassConstants.SUPER_BYTE_BUFFER)) {
+                        if (translateInstruction.name.equals("translate") && translateInstruction.desc.contains("Lnet/createmod/catnip/render/SuperByteBuffer")) {
+                            retval = new MethodInsnNode(Opcodes.INVOKEINTERFACE, "net/createmod/catnip/render/SuperByteBuffer", "translate", "(DDD)Ldev/engine_room/flywheel/lib/transform/Translate;");
+                        }else if (translateInstruction.name.equals("translate") && translateInstruction.desc.contains("Ljava/lang/Object")){
+                            retval = new MethodInsnNode(Opcodes.INVOKEINTERFACE, "net/createmod/catnip/render/SuperByteBuffer", "translate", "(Lnet/minecraft/world/phys/Vec3;)Ldev/engine_room/flywheel/lib/transform/Translate;");
+                        }else if (translateInstruction.name.equals("rotateCentered") && translateInstruction.desc.equals("(Lnet/minecraft/core/Direction;F)Lnet/createmod/catnip/render/SuperByteBuffer;")){
+
+
+                            retval = new MethodInsnNode(Opcodes.INVOKEINTERFACE, translateInstruction.owner,
+                                    translateInstruction.name,
+                                    "(FLnet/minecraft/core/Direction;)Ldev/engine_room/flywheel/lib/transform/Affine;");
+
+                        } else {
+                            retval = new MethodInsnNode(Opcodes.INVOKEINTERFACE, translateInstruction.owner, translateInstruction.name, translateInstruction.desc);
+                        }
+
+                    }
+
+
+                }
+
+                return retval;
+            }));
+
+            for(MethodNode m : targetClass.methods){
+                ArrayDeque<AbstractInsnNode> toRemove = new ArrayDeque<>();
+                for(AbstractInsnNode insn : m.instructions){
+                    if(insn.getType() == AbstractInsnNode.METHOD_INSN && insn.getOpcode() == Opcodes.INVOKEINTERFACE) {
+                        MethodInsnNode translateInstruction = (MethodInsnNode) insn;
+
+                        if(translateInstruction.name.equals("rotateCentered") && translateInstruction.desc.equals("(FLnet/minecraft/core/Direction;)Ldev/engine_room/flywheel/lib/transform/Affine;")){
+                            m.instructions.insertBefore(translateInstruction, new FieldInsnNode(Opcodes.GETSTATIC, "net/minecraft/core/Direction", "UP", "Lnet/minecraft/core/Direction;"));
+                            continue;
+                        }
+                    }
+                }
+                InstructionFixers.removeAllInstructions(targetClass, m, toRemove);
+            }
+
+
         }
 
 
@@ -671,6 +1008,27 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
         if(mixinJavaName.equals("SequencedCraftingFixers")){
             executeAllNormalInstructionFixers(targetClass);
         }
+
+        if(mixinJavaName.equals("IndustrialFanTypeProcessingInnerClassesFixer")){
+            System.out.println("industrial fan processing class: " + targetClassName);
+            executeAllNormalInstructionFixers(targetClass);
+        }
+
+        if(mixinJavaName.equals("FlywheelBlock")){
+            targetClass.signature = targetClass.signature.replace(
+                    "uwu/lopyluna/create_dd/block/BlockProperties/flywheel/FlywheelBlockEntity",
+                    "com/landscapesreimagined/ddtocreate6/replaced/BlockEntities/FlywheelBlockEntity"
+            );
+
+            for(MethodNode m : targetClass.methods){
+                m.signature = m.signature.replace(
+                        "uwu/lopyluna/create_dd/block/BlockProperties/flywheel/FlywheelBlockEntity",
+                        "com/landscapesreimagined/ddtocreate6/replaced/BlockEntities/FlywheelBlockEntity"
+                        );
+
+            }
+        }
+
 
 
 
@@ -695,6 +1053,40 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
             for(AbstractInsnNode insn : m.instructions){
                 InstructionFixers.applyStaticInsnClassMoves(insn, m);
             }
+        }
+    }
+
+
+    private static void executeAllNormalInstructionFixers(ClassNode targetClass, Function<AbstractInsnNode, AbstractInsnNode> executeOnAllInsnsAfterTransformation) {
+        InstructionFixers.applyStaticInterfaceMoves(targetClass);
+
+
+        for(FieldNode f : targetClass.fields) {
+            InstructionFixers.applyFieldClassMoves(f, targetClass);
+            InstructionFixers.applyStaticFieldClassMoves(f, targetClass);
+        }
+
+        for(MethodNode m : targetClass.methods){
+            InstructionFixers.applyStaticMethodClassMoves(m, targetClass);
+
+            ArrayDeque<AbstractInsnNode> toDelete = new ArrayDeque<>();
+
+            for(AbstractInsnNode insn : m.instructions){
+                InstructionFixers.applyStaticInsnClassMoves(insn, m);
+                AbstractInsnNode beforeInsn = executeOnAllInsnsAfterTransformation.apply(insn);
+
+                if(beforeInsn == null){
+                    toDelete.push(insn);
+                    continue;
+                }
+
+                if(insn != beforeInsn) {
+                    m.instructions.insertBefore(insn, beforeInsn);
+                    toDelete.push(insn);
+                }
+            }
+
+            InstructionFixers.removeAllInstructions(targetClass, m, toDelete);
         }
     }
 
@@ -797,7 +1189,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
     }
 
 
-        public static void printInstruction(AbstractInsnNode instruction){
+    public static void printInstruction(AbstractInsnNode instruction){
 
         System.out.print("instruction: " + instruction.getOpcode() + " type: " + instruction.getType());
 
@@ -830,5 +1222,11 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
 
+        if(debug){
+            if(targetClassName.equals("uwu.lopyluna.create_dd.block.BlockProperties.fan.TwoBladeFanBlockEntity")){
+                dumpClass(targetClassName, targetClass, false);
+            }
+//            System.out.println(targetClassName);
+        }
     }
 }

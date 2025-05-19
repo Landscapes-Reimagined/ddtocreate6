@@ -5,8 +5,12 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
+import javax.annotation.Nullable;
 import java.util.ArrayDeque;
 import java.util.HashMap;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 //yummy constants :3
 import static com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants.*;
@@ -316,6 +320,7 @@ public class InstructionFixers {
 //        targetClass.fields;
 
     }
+
     public static synchronized void applyStaticFieldClassMoves(FieldNode field, ClassNode targetClass){
 
         //only want to modify static fields for now
@@ -393,6 +398,32 @@ public class InstructionFixers {
         }
 
         targetClass.methods.set(index, method);
+    }
+
+    public static void executeOnEachInsn(ClassNode cn, BiConsumer<AbstractInsnNode, MethodNode> insnConsumer){
+        executeOnEachInsn(cn, insnConsumer, null, null);
+    }
+
+    public static void executeOnEachInsn(ClassNode cn, BiConsumer<AbstractInsnNode, MethodNode> insnConsumer, @Nullable Consumer<MethodNode> methodConsumer){
+        executeOnEachInsn(cn, insnConsumer, methodConsumer, null);
+
+    }
+
+    public static void executeOnEachInsn(ClassNode cn, BiConsumer<AbstractInsnNode, MethodNode> insnConsumer, @Nullable Consumer<MethodNode> methodConsumer, @Nullable Consumer<ClassNode> classConsumer){
+        if(classConsumer != null){
+            classConsumer.accept(cn);
+        }
+
+        for(MethodNode m : cn.methods){
+            if(methodConsumer != null){
+                methodConsumer.accept(m);
+            }
+            for(AbstractInsnNode insn : m.instructions){
+                insnConsumer.accept(insn, m);
+            }
+        }
+
+
     }
 
 
@@ -473,6 +504,8 @@ public class InstructionFixers {
 //        ONE_TO_ONE_CLASS_MOVES.put(WRONG_DD_PARTIAL_BLOCK_MODELS, RIGHT_PARTIAL_BLOCK_MODELS);
         ONE_TO_ONE_CLASS_MOVES.put(WRONG_VOXEL_SHAPER, VOXEL_SHAPER);
         ONE_TO_ONE_CLASS_MOVES.put(WRONG_COLOR, COLOR);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_TREE_CUTTER, TREE_CUTTER);
+        ONE_TO_ONE_CLASS_MOVES.put(WRONG_FLYWHEEL_RENDERER, FLYWHEEL_RENDERER);
 
 
     }

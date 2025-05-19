@@ -1,7 +1,7 @@
 package com.landscapesreimagined.ddtocreate6.replaced.BlockEntityRenderers;
 
+import com.landscapesreimagined.ddtocreate6.replaced.BlockEntities.FlywheelBlockEntity;
 import com.landscapesreimagined.ddtocreate6.replaced.ReplacedDDBlockPartialModel;
-import com.landscapesreimagined.ddtocreate6.util.mixin.FlywheelAccessor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.simibubi.create.AllPartialModels;
@@ -22,21 +22,20 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import uwu.lopyluna.create_dd.block.BlockProperties.flywheel.FlywheelBlock;
-import uwu.lopyluna.create_dd.block.BlockProperties.flywheel.FlywheelBlockEntity;
+
 
 public class FlywheelRenderer extends KineticBlockEntityRenderer<FlywheelBlockEntity> {
     public FlywheelRenderer(BlockEntityRendererProvider.Context context) {
         super(context);
     }
 
-    protected void renderSafe(FlywheelBlockEntity te, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
+    public void renderSafe(FlywheelBlockEntity te, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
         super.renderSafe(te, partialTicks, ms, buffer, light, overlay);
 
         if (!VisualizationManager.supportsVisualization(te.getLevel())) {
             BlockState blockState = te.getBlockState();
-            FlywheelAccessor wtea = (FlywheelAccessor) te;
-            float speed = wtea.visualSpeed().getValue(partialTicks) * 3.0F / 10.0F;
-            float angle = wtea.angle() + speed * partialTicks;
+            float speed = te.visualSpeed.getValue(partialTicks) * 3.0F / 10.0F;
+            float angle = te.angle + speed * partialTicks;
             VertexConsumer vb = buffer.getBuffer(RenderType.solid());
             if (FlywheelBlock.isConnected(blockState)) {
                 Direction connection = FlywheelBlock.getConnection(blockState);

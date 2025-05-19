@@ -65,7 +65,7 @@ minecraft {
     // However, it must be at "META-INF/accesstransformer.cfg" in the final mod jar to be loaded by Forge.
     // This default location is a best practice to automatically put the file in the right place in the final jar.
     // See https://docs.minecraftforge.net/en/latest/advanced/accesstransformers/ for more information.
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -146,6 +146,11 @@ repositories {
         }
     }
 
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/"
+    }
+
     maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
     maven { url = "https://maven.tterrag.com" } // Registrate
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" } // ForgeConfigAPIPort
@@ -185,6 +190,14 @@ dependencies {
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.5.0-beta.5")) {
         jarJar.ranged(it, "[0.5.0-beta.5,)")
     }
+
+
+    compileOnly fg.deobf("dev.emi:emi-forge:${emi_version}+${minecraft_version}:api")
+    runtimeOnly fg.deobf("dev.emi:emi-forge:${emi_version}+${minecraft_version}")
+
+
+
+
 
 //    implementation fg.deobf("curse.maven:create-dreams-desires-864781:4928111")
     implementation fg.deobf("locallibs:Create-Dreams-n-Desires-${minecraft_version}:0.2c.PREBETA")
