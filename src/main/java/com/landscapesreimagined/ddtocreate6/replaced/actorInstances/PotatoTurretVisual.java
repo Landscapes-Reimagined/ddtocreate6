@@ -29,7 +29,8 @@ public class PotatoTurretVisual extends SingleAxisRotatingVisual<PotatoTurretBlo
         barrel = instancerProvider()
                 .instancer(InstanceTypes.TRANSFORMED, Models.partial(ReplacedDDBlockPartialModel.POTATO_TURRET_SINGLE_BARREL))
                 .createInstance()
-                .translate(this.getVisualPosition());
+                .translate(this.getVisualPosition())
+                .translateY(1);
     }
 
 
@@ -49,7 +50,6 @@ public class PotatoTurretVisual extends SingleAxisRotatingVisual<PotatoTurretBlo
         this.barrel
 //                .translate(this.getVisualPosition())
                 .center()
-                .translateY(1)
                 .rotate(AngleHelper.rad(this.blockEntity.angleY.getValue()), Direction.UP)
 //                .translateZ(0.4f)
                 .rotate(AngleHelper.rad(-this.blockEntity.angleX.getValue()), Direction.WEST)

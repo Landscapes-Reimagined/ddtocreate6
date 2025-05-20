@@ -71,7 +71,12 @@ public class PotatoTurretBlockEntity extends KineticBlockEntity implements IHave
             if (this.timer >= this.fireRate) {
                 this.shoot();
             }
+            if(this.targetedEntity.isRemoved()){
+                this.targetedEntity = null;
+            }
         }
+
+
     }
 
     public void setTargetAngles() {
