@@ -18,8 +18,11 @@ import java.util.function.Consumer;
 public class DDDrillVisiual<T extends KineticBlockEntity> extends KineticBlockEntityVisual<T> {
     protected final RotatingInstance rotatingModel;
 
+
+
     public DDDrillVisiual(VisualizationContext context, T blockEntity, float partialTick, PartialModel drillModel) {
         super(context, blockEntity, partialTick);
+
         rotatingModel = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(drillModel))
                 .createInstance()
                 .rotateToFace(Direction.SOUTH, blockEntity.getBlockState().getValue(BlockStateProperties.FACING))

@@ -1,13 +1,11 @@
 package com.landscapesreimagined.ddtocreate6;
 
 import com.landscapesreimagined.ddtocreate6.client.DreamsAndDesireToCreate6Client;
+import com.landscapesreimagined.ddtocreate6.replaced.BlockEntities.BronzeSawBlockEntity;
 import com.landscapesreimagined.ddtocreate6.replaced.BlockEntities.FlywheelBlockEntity;
-import com.landscapesreimagined.ddtocreate6.replaced.BlockEntityRenderers.FlywheelRenderer;
-import com.landscapesreimagined.ddtocreate6.replaced.actorInstances.FlywheelVisual;
+import com.landscapesreimagined.ddtocreate6.replaced.BlockEntities.PotatoTurretBlockEntity;
 import com.mojang.logging.LogUtils;
-import com.simibubi.create.foundation.data.CreateBlockEntityBuilder;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
-import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -18,23 +16,22 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
-import uwu.lopyluna.create_dd.DDCreate;
-import uwu.lopyluna.create_dd.block.DDBlocks;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod(DreamsAndDesireToCreate6.MODID)
-public class DreamsAndDesireToCreate6 {
+@Mod(DreamsAndDesiresToCreate6.MODID)
+public class DreamsAndDesiresToCreate6 {
 
     // Define mod id in a common place for everything to reference
     public static final String MODID = "ddtocreate6";
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    @SuppressWarnings("unchecked")
     public static BlockEntityEntry<FlywheelBlockEntity> FLYWHEEL;
+    public static BlockEntityEntry<BronzeSawBlockEntity> BRONZE_SAW;
+    public static BlockEntityEntry<PotatoTurretBlockEntity> POTATO_TURRET;
 
 
-    public DreamsAndDesireToCreate6() {
+    public DreamsAndDesiresToCreate6() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
 

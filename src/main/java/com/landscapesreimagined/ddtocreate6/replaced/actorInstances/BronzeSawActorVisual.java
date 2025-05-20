@@ -30,6 +30,7 @@ public class BronzeSawActorVisual extends ActorVisual {
                 .setChanged();
     }
 
+
     @Override
     protected void _delete() {
         this.shaft.delete();

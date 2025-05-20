@@ -2,7 +2,6 @@ package com.landscapesreimagined.ddtocreate6.mixin.initfixers;
 
 
 import com.landscapesreimagined.ddtocreate6.replaced.ReplacedDDBlockPartialModel;
-import com.landscapesreimagined.ddtocreate6.replaced.StupidDDBlockEntityTypes;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import org.spongepowered.asm.mixin.Mixin;

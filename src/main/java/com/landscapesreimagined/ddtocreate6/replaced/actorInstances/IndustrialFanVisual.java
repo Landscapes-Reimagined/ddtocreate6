@@ -1,5 +1,6 @@
 package com.landscapesreimagined.ddtocreate6.replaced.actorInstances;
 
+import com.landscapesreimagined.ddtocreate6.replaced.ReplacedDDBlockPartialModel;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityVisual;
 import com.simibubi.create.content.kinetics.base.RotatingInstance;
@@ -13,6 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 import uwu.lopyluna.create_dd.block.BlockProperties.industrial_fan.IndustrialFanBlockEntity;
+import uwu.lopyluna.create_dd.block.BlockResources.DDBlockPartialModel;
 
 import java.util.function.Consumer;
 
@@ -31,9 +33,9 @@ public class IndustrialFanVisual extends KineticBlockEntityVisual<IndustrialFanB
         direction = blockState.getValue(FACING);
 
         opposite = direction.getOpposite();
-        shaft = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.SHAFT_HALF))
+        shaft = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(ReplacedDDBlockPartialModel.INDUSTRIAL_FAN_COG))
                 .createInstance();
-        fan = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.ENCASED_FAN_INNER))
+        fan = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(ReplacedDDBlockPartialModel.BRONZE_ENCASED_FAN_INNER))
                 .createInstance();
 
         shaft.setup(blockEntity)

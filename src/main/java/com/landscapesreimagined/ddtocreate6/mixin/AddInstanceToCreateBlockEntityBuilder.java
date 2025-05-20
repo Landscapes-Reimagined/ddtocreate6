@@ -1,10 +1,12 @@
 package com.landscapesreimagined.ddtocreate6.mixin;
 
+import com.landscapesreimagined.ddtocreate6.replaced.BlockEntityRenderers.BronzeSawRenderer;
 import com.landscapesreimagined.ddtocreate6.replaced.actorInstances.*;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.base.OrientedRotatingVisual;
 import com.simibubi.create.content.kinetics.base.ShaftVisual;
+import com.simibubi.create.content.kinetics.saw.SawBlockEntity;
 import com.simibubi.create.content.kinetics.transmission.SplitShaftVisual;
 import com.simibubi.create.foundation.data.CreateBlockEntityBuilder;
 import com.tterrag.registrate.AbstractRegistrate;
@@ -71,8 +73,8 @@ public abstract class AddInstanceToCreateBlockEntityBuilder<T extends BlockEntit
                     ((CreateBlockEntityBuilder<FurnaceEngineBlockEntity, P>) ((BlockEntityBuilder<T, P>) this)).visual(() -> FurnaceEngineVisual::new, renderNormally);
 //            case "flywheel" ->
 //                    ((CreateBlockEntityBuilder<FlywheelBlockEntity, P>) ((BlockEntityBuilder<T, P>) this)).visual(() -> FlywheelVisual::new, renderNormally);
-            case "bronze_saw" ->
-                    ((CreateBlockEntityBuilder<BronzeSawBlockEntity, P>) ((BlockEntityBuilder<T, P>) this)).visual(() -> BronzeSawVisual::new, renderNormally);
+//            case "bronze_saw" ->
+//                    ((CreateBlockEntityBuilder<BronzeSawBlockEntity, P>) ((BlockEntityBuilder<T, P>) this)).visual(() -> BronzeSawVisual::new, false);
             case "bronze_drill" ->
                     ((CreateBlockEntityBuilder<BronzeDrillBlockEntity, P>) ((BlockEntityBuilder<T, P>) this)).visual(() -> BronzeDrillVisual::new, renderNormally);
             case "encased_shaft" ->
@@ -99,8 +101,8 @@ public abstract class AddInstanceToCreateBlockEntityBuilder<T extends BlockEntit
                     ((CreateBlockEntityBuilder<KineticMotorBlockEntity, P>) ((BlockEntityBuilder<T, P>) this)).visual(() -> OrientedRotatingVisual.of(AllPartialModels.SHAFT_HALF), renderNormally);
             case "accelerator_motor" ->
                     ((CreateBlockEntityBuilder<AcceleratorMotorBlockEntity, P>) ((BlockEntityBuilder<T, P>) this)).visual(() -> OrientedRotatingVisual.of(AllPartialModels.SHAFT_HALF), renderNormally);
-            case "potato_turret" ->
-                    ((CreateBlockEntityBuilder<PotatoTurretBlockEntity, P>) ((BlockEntityBuilder<T, P>) this)).visual(() -> PotatoTurretVisual::new, renderNormally);
+//            case "potato_turret" ->
+//                    ((CreateBlockEntityBuilder<PotatoTurretBlockEntity, P>) ((BlockEntityBuilder<T, P>) this)).visual(() -> PotatoTurretVisual::new, renderNormally);
             case "cog_crank" ->
                     ((CreateBlockEntityBuilder<CogCrankBlockEntity, P>) ((BlockEntityBuilder<T, P>) this)).visual(() -> CogCrankVisual::new, renderNormally);
         }
@@ -113,14 +115,5 @@ public abstract class AddInstanceToCreateBlockEntityBuilder<T extends BlockEntit
     public CreateBlockEntityBuilder<T, P> instance(
             NonNullSupplier<BiFunction<?, T, ?>> instanceFactory) {
         return this.instance(instanceFactory, true);
-    }
-
-    @Override
-    public BlockEntityBuilder<T, P> renderer(NonNullSupplier<NonNullFunction<BlockEntityRendererProvider.Context, BlockEntityRenderer<? super T>>> renderer) {
-        if(this.getName().equals("flywheel")){
-            return (super.renderer(() -> (FlywheelRenderer::new)));
-        }
-        System.out.println("registering renderer: " + this.getName());
-        return super.renderer(renderer);
     }
 }

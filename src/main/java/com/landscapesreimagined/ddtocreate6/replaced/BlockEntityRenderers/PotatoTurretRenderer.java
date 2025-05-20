@@ -1,5 +1,6 @@
 package com.landscapesreimagined.ddtocreate6.replaced.BlockEntityRenderers;
 
+import com.landscapesreimagined.ddtocreate6.replaced.BlockEntities.PotatoTurretBlockEntity;
 import com.landscapesreimagined.ddtocreate6.replaced.ReplacedDDBlockPartialModel;
 import com.landscapesreimagined.ddtocreate6.util.Redirects;
 import com.landscapesreimagined.ddtocreate6.util.mixin.TurretAccessor;
@@ -17,7 +18,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import uwu.lopyluna.create_dd.block.BlockProperties.potato_turret.PotatoTurretBlockEntity;
 
 import java.util.function.Supplier;
 
@@ -38,23 +38,20 @@ public class PotatoTurretRenderer extends KineticBlockEntityRenderer<PotatoTurre
         TransformStack<PoseTransformStack> msr = TransformStack.of(ms);
         msr.translate(0.5, 0.5, 0.5);
 
-//        Supplier<TurretAccessor> turretAccessor = (() -> (TurretAccessor) be);
         BlockState blockState = null;
         Level level = null;
         BlockPos p = null;
-//        BlockState blockState = be.getBlockState();
-//
-//        TurretAccessor turretAccessor = (TurretAccessor) be;
+
         int lightAbove = LevelRenderer.getLightColor(level, p.above());
 
         CachedBuffers.partial(ReplacedDDBlockPartialModel.POTATO_TURRET_CONNECTOR, blockState)
-                .rotateYCentered(Redirects.getTurretY(be)/*turretAccessor.angleY().getValue()*/)
+                .rotateYCentered(be.angleY.getValue())
                 .light(lightAbove)
                 .renderInto(ms, vb);
 
         CachedBuffers.partial(ReplacedDDBlockPartialModel.POTATO_TURRET_SINGLE_BARREL, blockState)
-                .rotateYCentered(Redirects.getTurretY(be)/*turretAccessor.angleY().getValue()*/)
-                .rotateXCentered(Redirects.getTurretX(be)/*turretAccessor.angleX().getValue()*/)
+                .rotateYCentered(be.angleY.getValue())
+                .rotateXCentered(be.angleX.getValue())
                 .light(lightAbove)
                 .renderInto(ms, vb);
 

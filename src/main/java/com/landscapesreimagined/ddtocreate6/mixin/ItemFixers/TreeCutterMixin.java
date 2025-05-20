@@ -20,4 +20,6 @@ public class TreeCutterMixin {
     private static Direction[] wrapDirections(Operation<Direction[]> original){
         return Iterate.directions;
     }
+
+
 }

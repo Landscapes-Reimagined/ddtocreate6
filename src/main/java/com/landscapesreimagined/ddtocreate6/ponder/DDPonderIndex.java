@@ -13,8 +13,6 @@ import com.landscapesreimagined.ddtocreate6.ponder.DDPonderTags;
 import com.landscapesreimagined.ddtocreate6.ponder.DDProcessingScenes;
 
 public class DDPonderIndex {
-//    static final PonderRegistrationHelper HELPER = new PonderRegistrationHelper(DDCreate.MOD_ID);
-//    static final PonderRegistrationHelper CREATE_HELPER = new PonderRegistrationHelper(Create.ID);
 
     public static final boolean REGISTER_DEBUG_SCENES = true;
 

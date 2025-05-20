@@ -13,13 +13,4 @@ import uwu.lopyluna.create_dd.block.DDBlockShapes;
 
 @Mixin(BlockcopycatSlab.class)
 public class BlockCopycatSlabMixin {
-
-//    /**
-//     * @author
-//     * @reason
-//     */
-//    @Overwrite
-//    public VoxelShape getShape(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
-//        return DDBlockShapes.CASING_16PX;
-//    }
 }

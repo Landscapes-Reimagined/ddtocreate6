@@ -8,6 +8,7 @@ import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
+import com.simibubi.create.content.kinetics.saw.SawBlockEntity;
 import com.simibubi.create.content.logistics.box.PackageItem;
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringRenderer;
 import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
@@ -34,11 +35,11 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import uwu.lopyluna.create_dd.block.BlockProperties.bronze_saw.BronzeSawBlock;
-import uwu.lopyluna.create_dd.block.BlockProperties.bronze_saw.BronzeSawBlockEntity;
+import com.landscapesreimagined.ddtocreate6.replaced.BlockEntities.BronzeSawBlockEntity;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
-public class BronzeSawRenderer extends SafeBlockEntityRenderer<BronzeSawBlockEntity>{
+public class BronzeSawRenderer extends SafeBlockEntityRenderer<BronzeSawBlockEntity> {
 
 	public BronzeSawRenderer(BlockEntityRendererProvider.Context context) {}
 

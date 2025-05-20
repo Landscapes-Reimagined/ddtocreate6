@@ -1,5 +1,6 @@
 package com.landscapesreimagined.ddtocreate6.replaced.actorInstances;
 
+import com.landscapesreimagined.ddtocreate6.replaced.BlockEntities.BronzeSawBlockEntity;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityVisual;
 import com.simibubi.create.content.kinetics.base.RotatingInstance;
@@ -14,7 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.jetbrains.annotations.Nullable;
 import uwu.lopyluna.create_dd.block.BlockProperties.bronze_saw.BronzeSawBlock;
-import uwu.lopyluna.create_dd.block.BlockProperties.bronze_saw.BronzeSawBlockEntity;
+
 
 import java.util.function.Consumer;
 

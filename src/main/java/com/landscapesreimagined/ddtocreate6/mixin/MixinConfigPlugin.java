@@ -29,7 +29,7 @@ import static com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants.W
 public class MixinConfigPlugin implements IMixinConfigPlugin {
 
 
-    public static final boolean debug = true;
+    public static final boolean debug = false;
 
     public static final Object2IntMap<String> aaa = new Object2IntArrayMap<>();
     private static final Logger log = LoggerFactory.getLogger(MixinConfigPlugin.class);
@@ -49,10 +49,9 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
             this.getClass().getClassLoader().loadClass("com.landscapesreimagined.ddtocreate6.preinitutils.MethodReplacers");
             this.getClass().getClassLoader().loadClass("com.landscapesreimagined.ddtocreate6.preinitutils.LookAroundMatchers");
 
-
-
         } catch (ClassNotFoundException e) {
-            System.out.println("aw man :(");
+            log.error("Could not find preinit util class!!! This should be fine, but here be dragons! If this is in the log, I CAN NOT HELP YOU!");
+            log.error(e.getMessage());
         }
     }
 
@@ -132,7 +131,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                 writeDumpFile(targetClassName, insns.toString());
 
             //Remove DDBlocks#FLYWHEEL static initialization
-            final int toDelete = 29;
+            final int flywheelInitLength = 29;
 
             for(MethodNode m : targetClass.methods){
                 int deleted = 0;
@@ -153,7 +152,83 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
                         deleting = true;
                     }else{
-                        if(deleted >= toDelete) {
+                        if(deleted >= flywheelInitLength) {
+                            deleting = false;
+                            continue;
+                        }
+
+                        toRemove.push(insn);
+                        deleted += 1;
+                    }
+
+
+                }
+
+                InstructionFixers.removeAllInstructions(targetClass, m, toRemove);
+
+            }
+
+            //Remove DDBlocks#BRONZE_SAW static initialization
+            final int bronzeSawInitLength = 27;
+
+            for(MethodNode m : targetClass.methods){
+                int deleted = 0;
+                boolean deleting = false;
+                ArrayDeque<AbstractInsnNode> toRemove = new ArrayDeque<>();
+
+                for(AbstractInsnNode insn : m.instructions){
+
+                    if(!deleting) {
+                        if (insn.getOpcode() != Opcodes.GETSTATIC)
+                            continue;
+                        AbstractInsnNode next = insn.getNext();
+                        if (next.getOpcode() != Opcodes.LDC)
+                            continue;
+
+                        if (!((LdcInsnNode) next).cst.equals("bronze_saw"))
+                            continue;
+
+                        deleting = true;
+                    }else{
+                        if(deleted >= bronzeSawInitLength) {
+                            deleting = false;
+                            continue;
+                        }
+
+                        toRemove.push(insn);
+                        deleted += 1;
+                    }
+
+
+                }
+
+                InstructionFixers.removeAllInstructions(targetClass, m, toRemove);
+
+            }
+
+            //Remove DDBlocks#BRONZE_SAW static initialization
+            final int potatoTurretInitLength = 28;
+
+            for(MethodNode m : targetClass.methods){
+                int deleted = 0;
+                boolean deleting = false;
+                ArrayDeque<AbstractInsnNode> toRemove = new ArrayDeque<>();
+
+                for(AbstractInsnNode insn : m.instructions){
+
+                    if(!deleting) {
+                        if (insn.getOpcode() != Opcodes.GETSTATIC)
+                            continue;
+                        AbstractInsnNode next = insn.getNext();
+                        if (next.getOpcode() != Opcodes.LDC)
+                            continue;
+
+                        if (!((LdcInsnNode) next).cst.equals("potato_turret"))
+                            continue;
+
+                        deleting = true;
+                    }else{
+                        if(deleted >= potatoTurretInitLength) {
                             deleting = false;
                             continue;
                         }
@@ -288,29 +363,6 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
             if(debug)
                 dumpClass(targetClassName, targetClass, false);
-        }
-
-        //todo: test and finish!!
-        if(targetClassJavaName.contains("Redirects")){
-
-//            dumpClass(targetClassName, targetClass, true);
-
-            StringBuilder builder = new StringBuilder();
-
-            for(MethodNode method : targetClass.methods){
-                builder.append("method: ").append(method.name).append("\n");
-                for(AbstractInsnNode insnNode : method.instructions){
-                    builder.append(InstructionToString.instructionToString(insnNode, method, targetClass)).append("\n");
-                }
-                if(method.name.equals("getTurretX")){
-//                    builder.append(InstructionToString)
-                }
-            }
-
-            if(debug)
-                writeDumpFile(targetClassName, builder.toString());
-
-
         }
 
 
@@ -615,6 +667,10 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
             executeAllNormalInstructionFixers(targetClass);
         }
 
+        if(targetClassJavaName.equals("BronzeSawRenderer")){
+            executeAllNormalInstructionFixers(targetClass);
+        }
+
         if(targetClassName.contains("BronzeSawBlock")){
 //            System.out.println("Targeting bronze saw block: " + targetClassName);
             StringBuilder classString = new StringBuilder();
@@ -732,6 +788,22 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
         if(targetClassJavaName.contains("BronzeSawMovementBehaviour")){
             executeAllNormalInstructionFixers(targetClass);
+
+            for(MethodNode m : targetClass.methods){
+                if(!m.name.equals("onBlockBroken"))
+                    continue;
+
+                for(AbstractInsnNode insn : m.instructions) {
+                    if(insn.getOpcode() == Opcodes.INVOKESTATIC &&
+                            ((MethodInsnNode) insn).name.equals("findTree")){
+                        m.instructions.insertBefore(insn, new VarInsnNode(Opcodes.ALOAD, 3));
+                        ((MethodInsnNode) insn).desc =
+                                "(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Lcom/simibubi/create/content/kinetics/saw/TreeCutter$Tree;";
+                   }
+                }
+            }
+            if(debug)
+                dumpClass(targetClassName, targetClass, false);
         }
 
 
@@ -907,7 +979,9 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
         }
 
         if(targetClassJavaName.equals("HydraulicPressRenderer") || targetClassJavaName.equals("CogCrankRenderer")){
-            dumpClass(targetClassName, targetClass, true);
+            if(debug)
+                dumpClass(targetClassName, targetClass, true);
+
             executeAllNormalInstructionFixers(targetClass, (thingy -> {
                 AbstractInsnNode retval = thingy;
 
@@ -998,6 +1072,23 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
 
 
+        if(mixinJavaName.equals("FlywheelBlock")){
+            targetClass.signature = targetClass.signature.replace(
+                    "uwu/lopyluna/create_dd/block/BlockProperties/flywheel/FlywheelBlockEntity",
+                    "com/landscapesreimagined/ddtocreate6/replaced/BlockEntities/FlywheelBlockEntity"
+            );
+
+            for(MethodNode m : targetClass.methods){
+                m.signature = m.signature.replace(
+                        "uwu/lopyluna/create_dd/block/BlockProperties/flywheel/FlywheelBlockEntity",
+                        "com/landscapesreimagined/ddtocreate6/replaced/BlockEntities/FlywheelBlockEntity"
+                );
+
+            }
+        }
+
+
+
         //general fixers need to go all the way down here to make sure
         //that specific fixers won't trip up over migrated types
         //(starting now)
@@ -1010,24 +1101,15 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
         }
 
         if(mixinJavaName.equals("IndustrialFanTypeProcessingInnerClassesFixer")){
-            System.out.println("industrial fan processing class: " + targetClassName);
             executeAllNormalInstructionFixers(targetClass);
         }
 
-        if(mixinJavaName.equals("FlywheelBlock")){
-            targetClass.signature = targetClass.signature.replace(
-                    "uwu/lopyluna/create_dd/block/BlockProperties/flywheel/FlywheelBlockEntity",
-                    "com/landscapesreimagined/ddtocreate6/replaced/BlockEntities/FlywheelBlockEntity"
-            );
-
-            for(MethodNode m : targetClass.methods){
-                m.signature = m.signature.replace(
-                        "uwu/lopyluna/create_dd/block/BlockProperties/flywheel/FlywheelBlockEntity",
-                        "com/landscapesreimagined/ddtocreate6/replaced/BlockEntities/FlywheelBlockEntity"
-                        );
-
-            }
+        if(mixinJavaName.equals("LongNameMultiTarget")){
+            executeAllNormalInstructionFixers(targetClass);
         }
+
+
+
 
 
 
@@ -1092,6 +1174,9 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
 
     private static void dumpClass(String targetClassName, ClassNode targetClass, boolean before) {
+        if(!debug)
+            return;
+
         ClassWriter writer = new ClassWriter(0);
         targetClass.accept(writer);
 
@@ -1105,6 +1190,9 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
     }
 
     private static void writeDumpFile(String targetClassName, String classInstructions) {
+        if(!debug)
+            return;
+
         File dumpFile = new File("C:\\Users\\gamma\\OneDrive\\Documents\\sources\\instruction dumps\\dump-" + targetClassName.substring(targetClassName.lastIndexOf(".") + 1) + ".txt");
 
         try {

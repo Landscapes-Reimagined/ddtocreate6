@@ -67,7 +67,8 @@ public class EightBladeFanVisual extends KineticBlockEntityVisual<EightBladeFanB
                 .rotateY(AngleHelper.rad(angle))
                 .uncenter()
                 .setChanged();
-
+        shaft.setup(this.blockEntity)
+                .setChanged();
     }
 
 

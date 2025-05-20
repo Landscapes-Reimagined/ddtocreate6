@@ -29,6 +29,12 @@ public abstract class FlywheelRendererMixin extends KineticBlockEntityRenderer<F
 
     @Inject(method = "renderSafe", at = @At("HEAD"), cancellable = true, remap = false)
     public void injectRenderSafe(KineticBlockEntity te, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay, CallbackInfo ci){
+
+        if(!(te instanceof com.landscapesreimagined.ddtocreate6.replaced.BlockEntities.FlywheelBlockEntity)) {
+            ci.cancel();
+            return;
+        }
+
         actualRenderer.renderSafe((com.landscapesreimagined.ddtocreate6.replaced.BlockEntities.FlywheelBlockEntity) te, partialTicks, ms, buffer, light, overlay);
         ci.cancel();
     }

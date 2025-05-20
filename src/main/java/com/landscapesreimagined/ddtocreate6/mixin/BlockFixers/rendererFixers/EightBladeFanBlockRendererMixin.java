@@ -28,24 +28,6 @@ public abstract class EightBladeFanBlockRendererMixin extends KineticBlockEntity
         super(context);
     }
 
-//    @WrapOperation(
-//            method = "renderSafe(Luwu/lopyluna/create_dd/block/BlockProperties/fan/EightBladeFanBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V",
-//            at = @At(value = "INVOKE", target = "Lcom/jozufozu/flywheel/backend/Backend;canUseInstancing(Lnet/minecraft/world/level/Level;)Z"),
-//            remap = false
-//    )
-//    private boolean wrapCanUseInstancing(Level level, Operation<Boolean> original){
-//        return VisualizationManager.supportsVisualization(level);
-//    }
-
-//    @Redirect(
-//            method = "renderSafe(Luwu/lopyluna/create_dd/block/BlockProperties/fan/EightBladeFanBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V",
-//            at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/utility/animation/LerpedFloat;getValue(F)F"),
-//            remap = false
-//    )
-//    public float wrapLerpedFloatGet(com.simibubi.create.foundation.utility.animation.LerpedFloat instance, float v){
-//
-//    }
-
     /**
      * @author gamma_02
      * @reason lerped float weirdness

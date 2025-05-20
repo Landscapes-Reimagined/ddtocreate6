@@ -62,6 +62,8 @@ public class TwoBladeFanVisual extends KineticBlockEntityVisual<TwoBladeFanBlock
                 .rotateY(AngleHelper.rad(angle))
                 .uncenter()
                 .setChanged();
+        shaft.setup(this.blockEntity)
+                .setChanged();
 
     }
 

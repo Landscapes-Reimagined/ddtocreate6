@@ -18,17 +18,8 @@ public class DDPonderTags {
 
     public static final ResourceLocation
             CREATEDD = create("create_dd"),
-            /*.item((ItemLike) DDItems.spectral_ruby.get())
-            .defaultLang("Create: Dreams n' Desires", "Where Dreams & also Desires come true!")
-            .addToIndex();*/
             FAN_HEATER = create("fan_heater"),
-            /*.item((ItemLike) AllBlocks.BLAZE_BURNER.get())
-            .defaultLang("Industrial Fan Heaters", "Heater that are valid for the Industrial Fan")
-            .addToIndex();*/
             STONE_GENERATION = create("stone_generation");
-            /*.item(Items.COBBLESTONE)
-            .defaultLang("Stone Generations", "Stone Generators Fluids")
-            .addToIndex();*/
 
     private static ResourceLocation create(String id) {
         return DDCreate.asResource(id);

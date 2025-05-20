@@ -63,7 +63,8 @@ public class FourBladeFanVisual extends KineticBlockEntityVisual<FourBladeFanBlo
                 .rotateY(AngleHelper.rad(angle))
                 .uncenter()
                 .setChanged();
-
+        shaft.setup(this.blockEntity)
+                .setChanged();
     }
 
 
