@@ -9,16 +9,4 @@ import uwu.lopyluna.create_dd.item.ItemProperties.sawtool.ForestRavagerRender;
 
 @Mixin(ForestRavagerRender.class)
 public class ForestRavagerRendererMixin {
-
-//    @SuppressWarnings("InvalidInjectorMethodSignature")
-//    @WrapOperation(
-//            method = "<clinit>",
-//            at = {
-//                    @At(value = "NEW", target = "(Lnet/minecraft/resources/ResourceLocation;)Lcom/jozufozu/flywheel/core/PartialModel;"),
-//            }
-//    )
-//    public PartialModel thing(ResourceLocation resourceLocation){
-//        return PartialModel.of(resourceLocation);
-//    }
-
 }

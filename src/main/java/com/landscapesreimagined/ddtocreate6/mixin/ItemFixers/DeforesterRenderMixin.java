@@ -13,6 +13,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;
@@ -53,6 +55,7 @@ public class DeforesterRenderMixin {
      * @author gamma_02
      * @reason errors are too hard to fix through bytecode transformation
      */
+    @OnlyIn(Dist.CLIENT)
     @Overwrite(remap = false)
     protected void render(
             ItemStack stack,

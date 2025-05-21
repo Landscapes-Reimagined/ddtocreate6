@@ -27,68 +27,9 @@ import uwu.lopyluna.create_dd.block.DDBlocks;
 @Mixin(DDBlockEntityTypes.class)
 public class DDBlockEntityTypesMixin {
 
-//    @Definition(id = "lambda_static_5", method = "Luwu/lopyluna/create_dd/block/DDBlockEntityTypes;lambda$static$5()Lcom/tterrag/registrate/util/nullness/NonNullFunction;")
-//    @Definition(id = "renderer", method = "Lcom/simibubi/create/foundation/data/CreateBlockEntityBuilder;renderer(Lcom/tterrag/registrate/util/nullness/NonNullSupplier;)Lcom/tterrag/registrate/builders/BlockEntityBuilder;")
-//    @Expression("renderer(lambda_static_5)")
-//    @m(method = "<clinit>", at = @At(value = "MIXINEXTRAS:EXPRESSION"))
-//    @Redirect(method = "<clinit>", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/data/CreateBlockEntityBuilder;renderer(Lcom/tterrag/registrate/util/nullness/NonNullSupplier;)Lcom/tterrag/registrate/builders/BlockEntityBuilder;"))
-//    private static <T extends BlockEntity, P> BlockEntityBuilder<T, P> aa(CreateBlockEntityBuilder<T, P> instance, NonNullSupplier nonNullSupplier){
-//
-//        return instance;
-//    }
-//
-//    @Inject(method = "lambda$static$5", at = @At("HEAD"), cancellable = true)
-//    private static void a(CallbackInfoReturnable<NonNullFunction<BlockEntityRendererProvider.Context, BlockEntityRenderer<BronzeSawBlockEntity>>> cir){
-//        cir.setReturnValue(BronzeSawRenderer::new);
-//    }
-
-//    @Inject(method = "lambda$static$3", at = @At("HEAD"), cancellable = true)
-//    private static void aAAAAA(CallbackInfoReturnable<NonNullFunction<BlockEntityRendererProvider.Context, BlockEntityRenderer<FlywheelBlockEntity>>> cir){
-//        cir.setReturnValue(FlywheelRenderer::new);
-//    }
-
-//    @Inject(method = "lambda$static$35", at = @At("HEAD"), cancellable = true)
-//    private static void comeOnWHY(CallbackInfoReturnable<NonNullFunction<BlockEntityRendererProvider.Context, BlockEntityRenderer<PotatoTurretBlockEntity>>> cir){
-//        cir.setReturnValue(PotatoTurretRenderer::new);
-//    }
-
-//    @Redirect(method = "<clinit>", at = @At(value = "INVOKE", target = "Luwu/lopyluna/create_dd/block/DDBlockEntityTypes;lambda$static$5()Lcom/tterrag/registrate/util/nullness/NonNullFunction;"))
-
-//    @Inject(method = "lam")
-
     @SuppressWarnings("unchecked")
     @Inject(method = "<clinit>", at = @At("RETURN"))
     private static void afterClinit(CallbackInfo ci){
-         DreamsAndDesiresToCreate6.FLYWHEEL = (
-                (CreateBlockEntityBuilder<com.landscapesreimagined.ddtocreate6.replaced.BlockEntities.FlywheelBlockEntity, ?>)
-                        (DDCreate.REGISTRATE
-                                .blockEntity("flywheel", FlywheelBlockEntity::new)
-                                .visual(() -> FlywheelVisual::new)
-                                .validBlocks(new NonNullSupplier[]{DDBlocks.FLYWHEEL})))
-                .renderer(() -> (FlywheelRenderer::new))
-                .register();
-
-        DreamsAndDesiresToCreate6.BRONZE_SAW = (
-                (CreateBlockEntityBuilder<BronzeSawBlockEntity, ?>)
-                        (DDCreate.REGISTRATE
-                                .blockEntity("bronze_saw", BronzeSawBlockEntity::new)
-                                .visual(() -> BronzeSawVisual::new)
-                                .validBlocks(new NonNullSupplier[]{DDBlocks.BRONZE_SAW})))
-                .renderer(() -> (BronzeSawRenderer::new))
-                .register();
-
-        DreamsAndDesiresToCreate6.POTATO_TURRET = (
-                (CreateBlockEntityBuilder<PotatoTurretBlockEntity, ?>)
-                DDCreate.REGISTRATE
-                .blockEntity("potato_turret", PotatoTurretBlockEntity::new)
-                .visual(() -> PotatoTurretVisual::new, false)
-                .validBlocks(new NonNullSupplier[]{DDBlocks.POTATO_TURRET}))
-                .renderer(() -> (PotatoTurretRenderer::new))
-                .register();
+        DreamsAndDesiresToCreate6.afterDDClinit();
     }
-
-//    @Inject(method = "<clinit>", at = @At(value = "INVOKE", target = "Lcom/tterrag/registrate/builders/BlockBuilder;transform(Lcom/tterrag/registrate/util/nullness/NonNullFunction;)Lcom/tterrag/registrate/builders/Builder;"))
-//    private static void aaaa(CallbackInfo ci){
-//
-//    }
 }

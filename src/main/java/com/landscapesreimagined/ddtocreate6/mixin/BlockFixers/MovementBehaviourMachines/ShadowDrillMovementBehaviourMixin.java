@@ -12,6 +12,8 @@ import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -43,6 +45,7 @@ public abstract class ShadowDrillMovementBehaviourMixin extends BlockBreakingMov
     @Unique
     private ThreadLocal<MovementContext> movementContextLocal = new ThreadLocal<>();
 
+    @OnlyIn(Dist.CLIENT)
     @SuppressWarnings("InvalidInjectorMethodSignature")// it's valid at runtime, not at compile time.
     @Inject(method = "renderInContraption", at = @At("HEAD"), remap = false)
     public void captureMovementContext(MovementContext context, VirtualRenderWorld renderWorld, ContraptionMatrices matrices, MultiBufferSource buffer, CallbackInfo ci){
@@ -50,6 +53,7 @@ public abstract class ShadowDrillMovementBehaviourMixin extends BlockBreakingMov
     }
 
 
+    @OnlyIn(Dist.CLIENT)
     @WrapOperation(
             method = "renderInContraption",
             at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/render/ContraptionRenderDispatcher;canInstance()Z"),

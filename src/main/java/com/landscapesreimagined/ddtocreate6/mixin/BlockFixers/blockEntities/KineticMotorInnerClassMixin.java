@@ -13,6 +13,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,6 +36,7 @@ public abstract class KineticMotorInnerClassMixin extends ValueBoxTransform.Side
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public void rotate(LevelAccessor level, BlockPos pos, BlockState state, PoseStack ms) {
         super.rotate(level, pos, state, ms);
         Direction facing = state.getValue(CreativeMotorBlock.FACING);

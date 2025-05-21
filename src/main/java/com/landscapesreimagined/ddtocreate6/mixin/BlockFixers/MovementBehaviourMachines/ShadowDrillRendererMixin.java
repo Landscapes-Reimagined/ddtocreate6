@@ -15,6 +15,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import uwu.lopyluna.create_dd.block.BlockProperties.drill.shadow.ShadowDrillRenderer;
@@ -26,6 +28,7 @@ public class ShadowDrillRendererMixin {
      * @author gamma_02
      * @reason Don't want to mess around with weirdness
      */
+    @OnlyIn(Dist.CLIENT)
     @SuppressWarnings("MixinAnnotationTarget")
     @Overwrite(remap = false)
     public static void renderInContraption(MovementContext context, VirtualRenderWorld renderWorld,

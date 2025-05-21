@@ -16,6 +16,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import uwu.lopyluna.create_dd.block.BlockProperties.drill.bronze.BronzeDrillRenderer;
@@ -31,6 +33,7 @@ public class BronzeDrillRendererMixin {
      */
     @SuppressWarnings("MixinAnnotationTarget")
     @Overwrite(remap = false)
+    @OnlyIn(Dist.CLIENT)
     public static void renderInContraption(MovementContext context, VirtualRenderWorld renderWorld,
                                            ContraptionMatrices matrices, MultiBufferSource buffer) {
         BlockState state = context.state;

@@ -12,6 +12,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,6 +25,7 @@ import uwu.lopyluna.create_dd.block.BlockProperties.fan.TwoBladeFanBlockRenderer
 @Mixin(value = TwoBladeFanBlockRenderer.class, remap = false)
 public abstract class TwoBladeFanBlockRendererMixin extends KineticBlockEntityRenderer<TwoBladeFanBlockEntity> {
 
+    @OnlyIn(Dist.CLIENT)
     @Shadow
     protected abstract void renderFlywheel(TwoBladeFanBlockEntity be, PoseStack ms, int light, BlockState blockState, float angle, VertexConsumer vb);
 
@@ -34,6 +37,7 @@ public abstract class TwoBladeFanBlockRendererMixin extends KineticBlockEntityRe
      * @author gamma_02
      * @reason lerped float weirdness
      */
+    @OnlyIn(Dist.CLIENT)
     @Overwrite
     protected void renderSafe(TwoBladeFanBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
         super.renderSafe(be, partialTicks, ms, buffer, light, overlay);

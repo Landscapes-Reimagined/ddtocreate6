@@ -9,6 +9,8 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -23,6 +25,7 @@ public class FurnaceEngineBlockMixin {
      * @reason to not error on loading FurnaceEngineBlock :3
      */
     @SuppressWarnings("MixinAnnotationTarget")
+    @OnlyIn(Dist.CLIENT)
     @Overwrite(aliases = "getFrameModel", remap = false)
     public PartialModel getFrameModel() {
         return ReplacedDDBlockPartialModel.FURNACE_GENERATOR_FRAME;

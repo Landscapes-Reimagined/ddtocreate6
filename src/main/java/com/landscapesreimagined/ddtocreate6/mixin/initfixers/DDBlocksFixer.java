@@ -30,18 +30,6 @@ public class DDBlocksFixer {
         return instance;
     }
 
-//    @Inject(
-//            method = "<clinit>",
-//            at = @At("RETURN"),
-//            remap = false
-//    )
-//    private static void afterRegister(CallbackInfo ci){
-//        DreamsAndDesireToCreate6.TEST = DDCreate.REGISTRATE.block("test_2bladefan", RotatedPillarBlock::new)
-//                                        .addLayer( () -> RenderType::cutoutMipped)
-//                                        .register();
-//    }
-
-
 
 
 

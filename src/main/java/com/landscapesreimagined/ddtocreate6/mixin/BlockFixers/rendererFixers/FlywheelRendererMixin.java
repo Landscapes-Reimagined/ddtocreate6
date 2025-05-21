@@ -5,6 +5,8 @@ import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,11 +24,13 @@ public abstract class FlywheelRendererMixin extends KineticBlockEntityRenderer<F
         super(context);
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Inject(method = "<init>", at = @At("RETURN"))
     public void afterInit(BlockEntityRendererProvider.Context context, CallbackInfo ci){
         actualRenderer = new com.landscapesreimagined.ddtocreate6.replaced.BlockEntityRenderers.FlywheelRenderer(context);
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Inject(method = "renderSafe", at = @At("HEAD"), cancellable = true, remap = false)
     public void injectRenderSafe(KineticBlockEntity te, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay, CallbackInfo ci){
 
