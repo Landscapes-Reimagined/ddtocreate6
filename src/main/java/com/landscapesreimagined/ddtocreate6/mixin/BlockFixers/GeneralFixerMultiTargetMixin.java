@@ -26,6 +26,7 @@ import uwu.lopyluna.create_dd.item.ItemProperties.exp.ExperienceNuggetItemTwo;
 import uwu.lopyluna.create_dd.item.ItemProperties.SequencedCraftingItem.SequencedCraftingItem1;
 import uwu.lopyluna.create_dd.item.ItemProperties.SequencedCraftingItem.SequencedCraftingItem2;
 import uwu.lopyluna.create_dd.item.ItemProperties.StargazeInfiniteBlock;
+import uwu.lopyluna.create_dd.jei.DDcreateJEI;
 
 @Mixin(
         value = {
@@ -61,7 +62,6 @@ import uwu.lopyluna.create_dd.item.ItemProperties.StargazeInfiniteBlock;
                 SequencedCraftingItem1.class,
                 SequencedCraftingItem2.class,
                 StargazeInfiniteBlock.class,
-
         }
 )
 public class GeneralFixerMultiTargetMixin {

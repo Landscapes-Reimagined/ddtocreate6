@@ -978,7 +978,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
         }
 
-        if(targetClassJavaName.equals("HydraulicPressRenderer") || targetClassJavaName.equals("CogCrankRenderer")){
+        if(targetClassJavaName.equals("HydraulicPressRenderer") || targetClassJavaName.equals("CogCrankRenderer") || targetClassJavaName.equals("IndustrialFanRenderer")){
             if(debug)
                 dumpClass(targetClassName, targetClass, true);
 

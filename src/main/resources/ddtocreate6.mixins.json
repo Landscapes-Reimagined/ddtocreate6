@@ -71,6 +71,7 @@
     "BlockFixers.rendererFixers.RendererFixer",
     "BlockFixers.rendererFixers.TwoBladeFanBlockRendererMixin",
     "BlockFixers.rendererFixers.YIPEEESlidingDoorRendererMixin",
+    "compat.DDCreateJEIMixin",
     "hacks.PotatoTurrentRendererMixin",
     "hacks.SimpleUnbakedGeometryMixin",
     "initfixers.DDBlockEntityTypesMixin",

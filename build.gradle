@@ -155,6 +155,13 @@ repositories {
     maven { url = "https://maven.tterrag.com" } // Registrate
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" } // ForgeConfigAPIPort
 
+    //JEI
+    maven {
+        // location of the maven that hosts JEI files since January 2023
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
+    }
+
 }
 
 dependencies {
@@ -201,6 +208,10 @@ dependencies {
 
 //    implementation fg.deobf("curse.maven:create-dreams-desires-864781:4928111")
     implementation fg.deobf("locallibs:Create-Dreams-n-Desires-${minecraft_version}:0.2c.PREBETA")
+
+    // at runtime, use the full JEI jar for Forge
+    implementation(fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}"))
+
 
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
