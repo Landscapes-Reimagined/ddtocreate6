@@ -10,6 +10,7 @@
 This bridge was developed specifically to support the [**Create: Forge Frontier**](https://www.curseforge.com/minecraft/modpacks/forge-frontier) modpack, which integrates features from Dreams n' Desires to deliver an expansive and creative engineering experience in Minecraft.
 
 > 🚨 Compatibility is currently restricted to the versions listed above. There are **no plans to support newer versions** of *Dreams n' Desires* at this time.
+> There is a known incompatibility with Sinytra Connector, with no timeline for a fix.
 
 ## Features
 - Enables selected functionality from *Dreams n' Desires v0.2c-PREBETA* within *Create v6.0.4* environments.
