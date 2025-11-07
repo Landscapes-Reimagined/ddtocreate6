@@ -124,7 +124,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
             ArrayDeque<MethodNode> toTransform = new ArrayDeque<>();
 
             for(MethodNode m : targetClass.methods){
-                System.out.println("ALLFLUIDTAGS METHOD: " + m.name + "||" + m.desc);
+//                System.out.println("ALLFLUIDTAGS METHOD: " + m.name + "||" + m.desc);
 
                 if(m.desc.equals("(Ljava/lang/String;ILcom/simibubi/create/AllTags$NameSpace;)V"))
                     toTransform.add(m);
