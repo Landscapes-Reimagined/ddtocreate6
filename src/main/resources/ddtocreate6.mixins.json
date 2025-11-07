@@ -10,6 +10,7 @@
     "DDConfigsMixin",
     "DDKineticsMixin",
     "RegisterCreatePonderScenes",
+    "REGISTRATE_SHUT_UPMixin",
     "SuperByteBufferMixin",
     "BlockFixers.BlockCopycatBlockMixin",
     "BlockFixers.BlockCopycatSlabMixin",
@@ -34,6 +35,7 @@
     "BlockFixers.blockEntities.FourBladeFanBlockEntityMixin",
     "BlockFixers.blockEntities.FurnaceBlockEntityMixin",
     "BlockFixers.blockEntities.KineticMotorBlockEntityMixin",
+    "BlockFixers.blockEntities.KineticMotorInnerClassMixin",
     "BlockFixers.blockEntities.KineticMotorScrollValueBehaviourMixin",
     "BlockFixers.blockEntities.PotatoTurretBlockEntityMixin",
     "BlockFixers.blockEntities.TwoBladeFanBlockEntityMixin",
@@ -70,13 +72,12 @@
     "ItemFixers.DeforesterMixin",
     "ItemFixers.ForestRavagerMixin",
     "ItemFixers.SequencedCraftingFixers",
-    "ItemFixers.TreeCutterMixin",
-    "BlockFixers.blockEntities.KineticMotorInnerClassMixin"
+    "ItemFixers.TreeCutterMixin"
   ],
   "client": [
-    "ItemFixers.DeforesterRenderMixin",
-    "ItemFixers.ForestRavagerRendererMixin",
-    "hacks.PotatoTurrentRendererMixin",
+    "BlockFixers.MovementBehaviourMachines.BronzeDrillActorInstanceMixin",
+    "BlockFixers.MovementBehaviourMachines.BronzeDrillRendererMixin",
+    "BlockFixers.MovementBehaviourMachines.RadiantDrillRendererMixin",
     "BlockFixers.MovementBehaviourMachines.ShadowDrillRendererMixin",
     "BlockFixers.rendererFixers.BronzeRendererSawFixer",
     "BlockFixers.rendererFixers.CogCrankRendererMixin",
@@ -89,12 +90,11 @@
     "BlockFixers.rendererFixers.RendererFixer",
     "BlockFixers.rendererFixers.TwoBladeFanBlockRendererMixin",
     "BlockFixers.rendererFixers.YIPEEESlidingDoorRendererMixin",
-    "BlockFixers.MovementBehaviourMachines.RadiantDrillRendererMixin",
-    "BlockFixers.MovementBehaviourMachines.BronzeDrillRendererMixin",
-    "BlockFixers.MovementBehaviourMachines.BronzeDrillActorInstanceMixin",
+    "hacks.PotatoTurrentRendererMixin",
     "hacks.SimpleUnbakedGeometryMixin",
-    "initfixers.DDClientMixin"
-
+    "initfixers.DDClientMixin",
+    "ItemFixers.DeforesterRenderMixin",
+    "ItemFixers.ForestRavagerRendererMixin"
   ],
   "plugin": "com.landscapesreimagined.ddtocreate6.mixin.MixinConfigPlugin",
   "mixinextras": {
