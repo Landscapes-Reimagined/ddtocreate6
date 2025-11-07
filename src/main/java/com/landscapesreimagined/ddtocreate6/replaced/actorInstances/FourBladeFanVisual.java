@@ -22,7 +22,7 @@ import uwu.lopyluna.create_dd.block.BlockProperties.fan.FourBladeFanBlockEntity;
 
 import java.util.function.Consumer;
 
-public class FourBladeFanVisual extends KineticBlockEntityVisual<FourBladeFanBlockEntity>implements SimpleDynamicVisual {
+public class FourBladeFanVisual extends KineticBlockEntityVisual<FourBladeFanBlockEntity> implements SimpleDynamicVisual {
     private final Matrix4f baseTransform = new Matrix4f();
 
     TransformedInstance wheel;
