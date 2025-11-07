@@ -147,6 +147,10 @@ repositories {
     }
 
     maven {
+        url = "https://api.modrinth.com/maven"
+    }
+
+    maven {
         name = "TerraformersMC"
         url = "https://maven.terraformersmc.com/"
     }
@@ -161,6 +165,12 @@ repositories {
         name = "Jared's maven"
         url = "https://maven.blamejared.com/"
     }
+
+    maven {
+        name = "Sinytra"
+        url = "https://maven.su5ed.dev/releases"
+    }
+
 
 }
 
@@ -212,6 +222,11 @@ dependencies {
     // at runtime, use the full JEI jar for Forge
     implementation(fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}"))
 
+    //can confirm: Sinytra is fucked
+//    implementation fg.deobf("maven.modrinth:connector:1.0.0-beta.46+1.20.1")
+    // Add Connector to the launch classpath
+//    minecraftLibrary fg.deobf("org.sinytra:Connector:1.0.0-beta.46+1.20.1")
+
 
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
@@ -256,4 +271,12 @@ tasks.named('jar', Jar).configure {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+// Attach clean minecraft artifact path to runs, necessary for Connector to work
+afterEvaluate {
+    def cleanArtifactJar = Objects.requireNonNull(net.minecraftforge.gradle.common.util.MavenArtifactDownloader.generate(project, "net.minecraft:joined:${project.MCP_VERSION}:srg", true), "Cannot find clean minecraft artifact")
+    minecraft.runs.configureEach {
+        property("connector.clean.path", cleanArtifactJar)
+    }
 }
