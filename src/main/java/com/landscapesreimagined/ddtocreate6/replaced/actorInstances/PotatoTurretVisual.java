@@ -3,6 +3,7 @@ package com.landscapesreimagined.ddtocreate6.replaced.actorInstances;
 import com.landscapesreimagined.ddtocreate6.replaced.ReplacedDDBlockPartialModel;
 import com.mojang.math.Axis;
 import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
+import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.InstanceTypes;
 import dev.engine_room.flywheel.lib.instance.OrientedInstance;
@@ -71,7 +72,7 @@ public class PotatoTurretVisual extends SingleAxisRotatingVisual<PotatoTurretBlo
     }
 
     @Override
-    public void beginFrame(Context ctx) {
+    public void beginFrame(DynamicVisual.Context context) {
         this.transformBarrel();
         this.transformConnector();
     }

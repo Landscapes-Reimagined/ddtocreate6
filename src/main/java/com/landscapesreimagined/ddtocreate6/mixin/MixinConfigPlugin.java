@@ -4,6 +4,7 @@ import com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants;
 import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionFixers;
 import com.landscapesreimagined.ddtocreate6.preinitutils.InstructionToString;
 import com.landscapesreimagined.ddtocreate6.preinitutils.LookAroundMatchers;
+import com.simibubi.create.AllTags;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import org.checkerframework.checker.units.qual.A;
@@ -25,6 +26,7 @@ import java.util.function.Function;
 
 import static com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants.ITERATE;
 import static com.landscapesreimagined.ddtocreate6.preinitutils.ClassConstants.WRONG_ITERATE;
+import static com.landscapesreimagined.ddtocreate6.preinitutils.InstructionFixers.removeAllInstructions;
 
 public class MixinConfigPlugin implements IMixinConfigPlugin {
 
@@ -39,6 +41,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
     public void onLoad(String mixinPackage) {
         if(debug)
             System.out.println("I WAS LOADED!!!");
+
+
 
         try {
             //load classes for use in preinit stuff
@@ -115,7 +119,72 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
         }
 
-        if(targetClassJavaName.equals("DDBlockEntityTypes")) {
+        if(targetClassJavaName.contains("AllFluidTags")){
+//            dumpClass("DDTags$AllFluidTags", targetClass, true);'
+            ArrayDeque<MethodNode> toTransform = new ArrayDeque<>();
+
+            for(MethodNode m : targetClass.methods){
+                System.out.println("ALLFLUIDTAGS METHOD: " + m.name + "||" + m.desc);
+
+                if(m.desc.equals("(Ljava/lang/String;ILcom/simibubi/create/AllTags$NameSpace;)V"))
+                    toTransform.add(m);
+                else if(m.desc.equals("(Ljava/lang/String;ILcom/simibubi/create/AllTags$NameSpace;Ljava/lang/String;ZZ)V"))
+                    toTransform.add(m);
+
+
+            }
+
+            while(!toTransform.isEmpty()){
+                MethodNode init = toTransform.pop();
+
+//                System.out.println("TARGETING METHOD: " + init.name + init.desc);
+
+                ArrayDeque<AbstractInsnNode> toRemove = new ArrayDeque<>();
+                AbstractInsnNode last = null;
+                for(AbstractInsnNode cur : init.instructions){
+                    if(last == null){
+                        last = cur;
+                        continue;
+                    }
+
+                    if(cur.getOpcode() == Opcodes.GETFIELD){
+                        FieldInsnNode field = ((FieldInsnNode) cur);
+
+//                        System.out.println(InstructionToString.instructionToString(field, init, targetClass));
+                    }
+
+                    if(cur.getOpcode() == Opcodes.GETFIELD
+                            && ((FieldInsnNode) cur).name.contains("optionalDefault")
+                            && last.getOpcode() == Opcodes.ALOAD){
+//                        System.out.println("got field!");
+                        toRemove.push(last);
+                        toRemove.push(cur);
+                        init.instructions.insertBefore(cur, new InsnNode(Opcodes.ICONST_0));
+                    } else if(cur.getOpcode() == Opcodes.GETFIELD
+                                && ((FieldInsnNode) cur).name.equals("alwaysDatagenDefault")
+                                && last.getOpcode() == Opcodes.ALOAD){
+//                        System.out.println("got field!");
+                        toRemove.push(last);
+                        toRemove.push(cur);
+                        init.instructions.insertBefore(cur, new InsnNode(Opcodes.ICONST_1));
+
+                    }
+
+                    last = cur;
+
+
+                }
+
+                removeAllInstructions(targetClass, init, toRemove);
+
+
+
+            }
+
+        }
+
+
+            if(targetClassJavaName.equals("DDBlockEntityTypes")) {
 //            executeAllNormalInstructionFixers(targetClass);
 
             StringBuilder insns = new StringBuilder();
@@ -164,7 +233,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
                 }
 
-                InstructionFixers.removeAllInstructions(targetClass, m, toRemove);
+                removeAllInstructions(targetClass, m, toRemove);
 
             }
 
@@ -202,7 +271,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
                 }
 
-                InstructionFixers.removeAllInstructions(targetClass, m, toRemove);
+                removeAllInstructions(targetClass, m, toRemove);
 
             }
 
@@ -240,7 +309,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
                 }
 
-                InstructionFixers.removeAllInstructions(targetClass, m, toRemove);
+                removeAllInstructions(targetClass, m, toRemove);
 
             }
 
@@ -301,7 +370,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                             --deleteCounter;
                         }
                     }
-                    InstructionFixers.removeAllInstructions(targetClass, method, toRemove);
+                    removeAllInstructions(targetClass, method, toRemove);
                 }//end clinit
 
             }
@@ -480,7 +549,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                         }
                     }
 
-                    InstructionFixers.removeAllInstructions(targetClass, method, toRemove);
+                    removeAllInstructions(targetClass, method, toRemove);
                 }
             }
         }
@@ -899,7 +968,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 //                        }
                     }
                 }
-                InstructionFixers.removeAllInstructions(targetClass, m, toRemove);
+                removeAllInstructions(targetClass, m, toRemove);
             }
 
 
@@ -959,7 +1028,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                         toRemove.push(insn.getNext().getNext());
                     }
                 }
-                InstructionFixers.removeAllInstructions(targetClass, m, toRemove);
+                removeAllInstructions(targetClass, m, toRemove);
             }
 
             ArrayDeque<FieldNode> fieldsToRemove = new ArrayDeque<>();
@@ -1064,7 +1133,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                         }
                     }
                 }
-                InstructionFixers.removeAllInstructions(targetClass, m, toRemove);
+                removeAllInstructions(targetClass, m, toRemove);
             }
 
 
@@ -1107,13 +1176,6 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
         if(mixinJavaName.equals("LongNameMultiTarget")){
             executeAllNormalInstructionFixers(targetClass);
         }
-
-
-
-
-
-
-
 
 
 
@@ -1168,7 +1230,7 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
                 }
             }
 
-            InstructionFixers.removeAllInstructions(targetClass, m, toDelete);
+            removeAllInstructions(targetClass, m, toDelete);
         }
     }
 

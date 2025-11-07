@@ -7,6 +7,7 @@ import com.simibubi.create.content.kinetics.base.ShaftVisual;
 import com.simibubi.create.content.kinetics.press.MechanicalPressBlock;
 import com.simibubi.create.content.kinetics.press.PressingBehaviour;
 import dev.engine_room.flywheel.api.instance.Instance;
+import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.InstanceTypes;
 import dev.engine_room.flywheel.lib.instance.OrientedInstance;
@@ -68,7 +69,8 @@ public class HydraulicPressVisual extends ShaftVisual<HydraulicPressBlockEntity>
     }
 
     @Override
-    public void beginFrame(Context ctx) {
-        transformModels(ctx.partialTick());
+    public void beginFrame(DynamicVisual.Context context) {
+        transformModels(context.partialTick());
+
     }
 }
