@@ -10,7 +10,6 @@
     "DDConfigsMixin",
     "DDKineticsMixin",
     "RegisterCreatePonderScenes",
-    "REGISTRATE_SHUT_UPMixin",
     "SuperByteBufferMixin",
     "BlockFixers.BlockCopycatBlockMixin",
     "BlockFixers.BlockCopycatSlabMixin",
