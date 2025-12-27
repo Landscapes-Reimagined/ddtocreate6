@@ -3,7 +3,8 @@
 </p>
 
 # Create: Dreams n' Desires to Create 6
-
+## ⚠️ Issues and Suggestions
+Have any issues or suggestions you'd like to report visit our centralized area to do so: [Landscapes Reimagined - Issues and Suggestions](https://github.com/Landscapes-Reimagined/Issues-and-Suggestions)
 ## Overview
 **Create: Dreams n' Desires to Create 6** is a purpose-built compatibility layer that allows **Create v6.0.4** to work seamlessly with **Create: Dreams n' Desires v0.2c-PREBETA**. 
 
