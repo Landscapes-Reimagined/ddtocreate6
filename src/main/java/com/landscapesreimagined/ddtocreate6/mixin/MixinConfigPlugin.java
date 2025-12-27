@@ -378,7 +378,10 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
 
 
-//        if(targetClassJavaName.contains("Fur"))
+        //why was this modified? no clue. this codebase is,, not doing great. lol.
+//        if(targetClassJavaName.contains("FurnaceEngineBlock")){
+//            dumpClass(targetClassName, targetClass, true);
+//        }
 
 
         //targetClassName.contains("uwu.lopyluna.create_dd.block.BlockProperties.copycat.BlockcopycatSlab")
@@ -1171,6 +1174,23 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
         if(mixinJavaName.equals("IndustrialFanTypeProcessingInnerClassesFixer")){
             executeAllNormalInstructionFixers(targetClass);
+            //find the specific call to applyRecipeOn and add the boolean argument to it, and add a
+
+            //fix create 6.0.8 change in RecipeApplier
+            for(MethodNode method : targetClass.methods){
+                for(AbstractInsnNode insn : method.instructions){
+                    if(insn.getOpcode() == Opcodes.INVOKESTATIC){
+
+                        if(((MethodInsnNode) insn).name.equals("applyRecipeOn")) {
+
+                            ((MethodInsnNode) insn).desc = "(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/crafting/Recipe;Z)Ljava/util/List;";
+
+                            method.instructions.insertBefore(insn, new InsnNode(Opcodes.ICONST_0));
+
+                        }
+                    }
+                }
+            }
         }
 
         if(mixinJavaName.equals("LongNameMultiTarget")){
