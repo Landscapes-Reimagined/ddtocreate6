@@ -1,0 +1,16 @@
+JVM:         C:\Users\Owner\.jabba\jdk\temurin@17.0.17\bin\java.exe
+JVM Args:    
+Run Args:    "--task", "MERGE_MAPPING", "--left", "config/joined.tsrg", "--right", "C:\Users\Owner\Documents\GitHub\ddtocreate6\build\fg_cache\mcp\1.20.1-20230612.114412\joined\521b25b73477d46763cb89164cdb0619a08f548e\downloadClientMappings\client_mappings.txt", "--right-names", "right,left", "--classes", "--output", "C:\Users\Owner\Documents\GitHub\ddtocreate6\build\fg_cache\mcp\1.20.1-20230612.114412\joined\521b25b73477d46763cb89164cdb0619a08f548e\mergeMappings\output.jar"
+Classpath:   C:\Users\Owner\.gradle\caches\forge_gradle\maven_downloader\net\minecraftforge\installertools\1.2.0\installertools-1.2.0-fatjar.jar
+Working Dir: C:\Users\Owner\Documents\GitHub\ddtocreate6\build\fg_cache\mcp\1.20.1-20230612.114412\joined\521b25b73477d46763cb89164cdb0619a08f548e\mergeMappings
+Main Class:  net.minecraftforge.installertools.ConsoleTool
+Task: MERGE_MAPPING
+Left:    config\joined.tsrg
+         null
+Right:   C:\Users\Owner\Documents\GitHub\ddtocreate6\build\fg_cache\mcp\1.20.1-20230612.114412\joined\521b25b73477d46763cb89164cdb0619a08f548e\downloadClientMappings\client_mappings.txt
+         right,left
+Classes: true
+Fields:  false
+Methods: false
+Params:  false
+Output:  C:\Users\Owner\Documents\GitHub\ddtocreate6\build\fg_cache\mcp\1.20.1-20230612.114412\joined\521b25b73477d46763cb89164cdb0619a08f548e\mergeMappings\output.jar

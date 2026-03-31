@@ -1,0 +1,15 @@
+Java Launcher: C:\Users\Owner\.jabba\jdk\temurin@17.0.17\bin\java.exe
+Arguments: '--task, SRG_TO_MCP, --input, C:\Users\Owner\.gradle\caches\modules-2\files-2.1\net.createmod.ponder\Ponder-Forge-1.20.1\1.0.91\f110340ad6af13a09c1f8b91e0a71ba9ae737bcd\Ponder-Forge-1.20.1-1.0.91.jar, --output, C:\Users\Owner\.gradle\caches\forge_gradle\deobf_dependencies\net\createmod\ponder\Ponder-Forge-1.20.1\1.0.91_mapped_official_1.20.1\Ponder-Forge-1.20.1-1.0.91_mapped_official_1.20.1.jar, --mcp, C:\Users\Owner\.gradle\caches\forge_gradle\mcp_repo\net\minecraft\mapping\1.20.1\mapping-1.20.1-mapping.zip, --strip-signatures'
+Classpath:
+ - C:\Users\Owner\.gradle\caches\forge_gradle\maven_downloader\net\minecraftforge\installertools\1.4.4\installertools-1.4.4-fatjar.jar
+Working directory: C:\Users\Owner\Documents\GitHub\ddtocreate6\build\_RenameSrg2Mcp_662069259
+Main class: net.minecraftforge.installertools.ConsoleTool
+====================================
+Task: SRG_TO_MCP
+Input:  C:\Users\Owner\.gradle\caches\modules-2\files-2.1\net.createmod.ponder\Ponder-Forge-1.20.1\1.0.91\f110340ad6af13a09c1f8b91e0a71ba9ae737bcd\Ponder-Forge-1.20.1-1.0.91.jar
+Output: C:\Users\Owner\.gradle\caches\forge_gradle\deobf_dependencies\net\createmod\ponder\Ponder-Forge-1.20.1\1.0.91_mapped_official_1.20.1\Ponder-Forge-1.20.1-1.0.91_mapped_official_1.20.1.jar
+MCP:    C:\Users\Owner\.gradle\caches\forge_gradle\mcp_repo\net\minecraft\mapping\1.20.1\mapping-1.20.1-mapping.zip
+Loading MCP Data
+Processing ZIP file
+Stripped Manifest of sha digests
+Process complete
